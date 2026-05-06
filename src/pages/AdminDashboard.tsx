@@ -210,7 +210,7 @@ export const AdminDashboard: React.FC = () => {
         {activeTab === 'inventory' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Add Product Form */}
-            <div className="lg:col-span-1 p-8 bg-dark-surface border border-dark-border h-fit sticky top-32">
+            <div className="lg:col-span-1 p-8 bg-dark-surface border border-dark-border h-fit lg:sticky lg:top-32">
               <h3 className="text-lg font-display font-black uppercase tracking-tight mb-8 flex items-center gap-2">
                 <Plus size={20} className="text-brand-red" /> New Inventory
               </h3>

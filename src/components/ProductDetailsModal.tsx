@@ -52,16 +52,16 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
             className="fixed inset-0 bg-black/95 backdrop-blur-xl z-[300]"
           />
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
+            initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed inset-0 sm:inset-6 lg:inset-12 bg-dark-bg border border-dark-border z-[301] flex flex-col lg:flex-row overflow-hidden shadow-2xl"
+            exit={{ y: '100%', opacity: 0 }}
+            className="fixed inset-0 sm:inset-6 lg:inset-12 bg-dark-bg border-t sm:border border-dark-border z-[301] flex flex-col lg:flex-row overflow-hidden shadow-2xl"
           >
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 text-white/40 hover:text-white z-[302] p-2 bg-black/50 backdrop-blur-md rounded-full transition-all"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/40 hover:text-white z-[302] p-2 bg-black/50 backdrop-blur-md rounded-full transition-all"
             >
-              <X size={24} />
+              <X size={20} className="sm:w-6 sm:h-6" />
             </button>
 
             {/* Left side: Hero Image */}
@@ -72,14 +72,14 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-60" />
-              <div className="absolute bottom-8 left-8">
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-red mb-2 block">Premium Collective</span>
-                <h2 className="text-4xl lg:text-5xl font-display font-black tracking-tighter uppercase">{product.name}</h2>
+              <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8">
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.5em] text-brand-red mb-1 sm:mb-2 block">Premium Collective</span>
+                <h2 className="text-2xl sm:text-4xl lg:text-5xl font-display font-black tracking-tighter uppercase">{product.name}</h2>
               </div>
             </div>
 
             {/* Right side: Info */}
-            <div className="flex-1 overflow-y-auto px-6 py-12 lg:p-16 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto px-4 py-8 sm:px-6 sm:py-12 lg:p-16 custom-scrollbar">
               <div className="max-w-2xl mx-auto lg:mx-0">
                 <div className="flex items-center gap-2 mb-6">
                   <div className="flex">

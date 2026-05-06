@@ -35,7 +35,7 @@ export const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-5xl md:text-8xl font-display font-black tracking-tighter uppercase mb-6 leading-[0.85]"
+          className="text-4xl md:text-8xl font-display font-black tracking-tighter uppercase mb-6 leading-[0.85]"
         >
           THE DIGITAL <br />
           <span className="text-brand-red">ARCHIVE</span>
