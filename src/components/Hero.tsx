@@ -25,8 +25,8 @@ export const Hero: React.FC = () => {
           className="mb-6 flex items-center gap-4"
         >
           <span className="h-px w-12 bg-brand-red" />
-          <p className="text-xs uppercase tracking-[0.4em] font-bold text-brand-red">
-            Drop 01 // Alpha Prime
+          <p className="text-[10px] uppercase tracking-[0.4em] font-black text-brand-red">
+            NEW SEASON DROP
           </p>
           <span className="h-px w-12 bg-brand-red" />
         </motion.div>
@@ -44,9 +44,9 @@ export const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-sm md:text-base text-white/40 max-w-lg mb-10 uppercase tracking-[0.3em] font-medium leading-relaxed"
+          className="text-xs md:text-sm text-white/60 max-w-lg mb-10 uppercase tracking-[0.2em] font-bold leading-relaxed"
         >
-          Premium Streetwear & Sport Excellence. <br />
+          Premium Apparel & Streetwear Excellence. <br />
           Curated by Wickliff Miles.
         </motion.p>
 

@@ -40,8 +40,8 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
-                  Inquiry Protocol
+                <Link to="/contact" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
+                  Contact Us
                   <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
@@ -64,11 +64,11 @@ export const Footer: React.FC = () => {
 
           <div className="lg:text-right">
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-8">Newsletter</h4>
-            <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6 lg:ml-auto">Secure early access keys for Drop 02.</p>
+            <p className="text-xs font-bold text-white/60 uppercase tracking-widest mb-6 lg:ml-auto">Sign up for early access to our next drop.</p>
             <div className="relative group">
               <input 
                 type="text" 
-                placeholder="MEMBER_ID@GMAIL.COM"
+                placeholder="YOUR@EMAIL.COM"
                 className="w-full bg-dark-surface border-b border-white/10 py-4 text-[10px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/10"
               />
               <button className="absolute right-0 bottom-4 text-brand-red opacity-0 group-hover:opacity-100 transition-opacity">

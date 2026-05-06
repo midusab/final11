@@ -87,7 +87,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                       <Star key={i} size={14} className={i < 4 ? "fill-brand-red text-brand-red" : "text-white/10"} />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{product.reviews.length} Reviews From The Collective</span>
+                  <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{product.reviews.length} Customer Reviews</span>
                 </div>
 
                 <p className="text-2xl font-display font-black mb-8">KES {product.price.toLocaleString()}</p>
@@ -95,11 +95,11 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 <div className="space-y-8 mb-12">
                   <div>
                     <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-3">Product Description</h4>
-                    <p className="text-white/70 text-sm leading-relaxed italic">{product.description}</p>
+                    <p className="text-white/80 text-sm leading-relaxed italic">{product.description}</p>
                   </div>
 
                   <div>
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-3">Composition & Details (ASOS Inspired)</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-3">Product Specifications</h4>
                     <ul className="space-y-3">
                       {product.details.map((detail, idx) => (
                         <li key={idx} className="flex gap-3 text-xs text-white/80 font-medium">
@@ -164,7 +164,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                       <Star size={64} className="text-brand-red" />
                     </div>
                     
-                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-6">Leave Your Mark</h5>
+                    <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-6">Write a Review</h5>
                     
                     <form onSubmit={handleSubmitReview} className="relative z-10">
                       <div className="flex items-center gap-4 mb-6">
@@ -188,10 +188,10 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
 
                       <div className="mb-6">
                         <textarea
-                          placeholder="Your transmission to the collective..."
+                          placeholder="Your review here..."
                           value={newComment}
                           onChange={(e) => setNewComment(e.target.value)}
-                          className="w-full bg-dark-surface border border-dark-border p-4 text-xs font-medium text-white placeholder:text-white/10 focus:outline-none focus:border-brand-red transition-all min-h-[100px] resize-none"
+                          className="w-full bg-dark-surface border border-dark-border p-4 text-xs font-medium text-white placeholder:text-white/20 focus:outline-none focus:border-brand-red transition-all min-h-[100px] resize-none"
                         />
                       </div>
 
