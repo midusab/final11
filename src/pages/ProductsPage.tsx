@@ -17,6 +17,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
   const [searchQuery, setSearchQuery] = React.useState('');
   
   const filteredProducts = products.filter(p => {
+    if (p.is_upcoming) return false;
     const categoryMatch = activeCategory === 'All' || p.category === activeCategory;
     const priceMatch = p.price <= maxPrice;
     const sizeMatch = selectedSizes.length === 0 || p.sizes.some(s => selectedSizes.includes(s));

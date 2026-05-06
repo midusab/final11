@@ -215,7 +215,7 @@ export default function App() {
               </>
             } />
             <Route path="/products" element={<ProductList onAddToCart={addToCart} onViewDetails={setSelectedProduct} products={products} />} />
-            <Route path="/collections" element={<CollectionsPage />} />
+            <Route path="/collections" element={<CollectionsPage products={products} />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />

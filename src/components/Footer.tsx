@@ -6,102 +6,95 @@ import { toast } from 'sonner';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-dark-bg border-t border-dark-border pt-24 pb-12 overflow-hidden">
+    <footer className="bg-dark-bg border-t border-dark-border pt-16 pb-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-24 mb-24">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-24 mb-16">
+          <div className="space-y-6">
             <h3 className="text-3xl font-display font-black tracking-tighter text-white">
               FINALL <span className="text-brand-red italic">11</span>
             </h3>
-            <p className="text-xs font-medium text-white/40 leading-relaxed max-w-xs uppercase tracking-widest">
-              Founded by <span className="text-brand-red">Wickliff Miles</span>. <br/>
-              An architectural approach to streetwear bridging urban culture and elite sports.
+            <p className="text-xs font-medium text-white/60 leading-relaxed max-w-xs uppercase tracking-widest">
+              An architectural approach to streetwear. <br/>
+              Founded by <span className="text-brand-red">Wickliff Miles</span>.
             </p>
             <div className="flex items-center gap-6">
               {[Instagram, Twitter, MessageSquare].map((Icon, i) => (
                 <a key={i} href="#" className="text-white/20 hover:text-brand-red transition-colors">
-                  <Icon size={20} />
+                  <Icon size={18} />
                 </a>
               ))}
             </div>
           </div>
 
           <div>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-8">Access</h4>
-            <ul className="space-y-4">
+            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-6">Navigation</h4>
+            <ul className="grid grid-cols-2 gap-4">
+              <li>
+                <Link to="/" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                  Home
+                </Link>
+              </li>
               <li>
                 <Link to="/products" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
-                  The Shop
-                  <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Shop
                 </Link>
               </li>
               <li>
                 <Link to="/collections" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
-                  The Archive
-                  <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Archive
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
-                  Contact Us
-                  <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Link to="/contact" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                  Support
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-8">The Studio</h4>
-            <ul className="space-y-4">
-              {['Inventory Archive', 'Our Manifesto', 'Sustainability', 'Global Collective'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
-                    {item}
-                    <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
-                </li>
-              ))}
             </ul>
           </div>
 
           <div className="lg:text-right">
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-8">Newsletter</h4>
             <p className="text-xs font-bold text-white/60 uppercase tracking-widest mb-6 lg:ml-auto">Sign up for early access to our next drop.</p>
-            <form 
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const email = (e.currentTarget.elements.namedItem('newsletter_email') as HTMLInputElement).value;
-                if (!email) return;
-                try {
-                  const { error } = await supabase.from('newsletter_subs').insert([{ email }]);
-                  if (error) {
-                    if (error.code === '23505') {
-                      toast.info('ALREADY SUBSCRIBED', { description: 'You are already on the list.' });
-                    } else throw error;
-                  } else {
-                    toast.success('ACCESS GRANTED', { description: 'You will receive early access keys.' });
-                    (e.target as HTMLFormElement).reset();
+            <div className="max-w-md lg:ml-auto">
+              <form 
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const email = (e.currentTarget.elements.namedItem('newsletter_email') as HTMLInputElement).value;
+                  if (!email) return;
+                  try {
+                    const { error } = await supabase.from('newsletter_subs').insert([{ email }]);
+                    if (error) {
+                      if (error.code === '23505') {
+                        toast.info('ALREADY SUBSCRIBED', { description: 'You are already on the list.' });
+                      } else throw error;
+                    } else {
+                      toast.success('ACCESS GRANTED', { description: 'You will receive early access keys.' });
+                      (e.target as HTMLFormElement).reset();
+                    }
+                  } catch (err: any) {
+                    toast.error('PROTOCOL FAILED', { description: err.message });
                   }
-                } catch (err: any) {
-                  toast.error('PROTOCOL FAILED', { description: err.message });
-                }
-              }}
-              className="relative group"
-            >
-              <input 
-                name="newsletter_email"
-                type="email" 
-                required
-                placeholder="YOUR@EMAIL.COM"
-                className="w-full bg-dark-surface border-b border-white/10 py-4 text-[10px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/10"
-              />
-              <button 
-                type="submit"
-                className="absolute right-0 bottom-4 text-brand-red opacity-0 group-hover:opacity-100 transition-opacity font-black text-[10px] tracking-widest"
+                }}
+                className="flex flex-col sm:flex-row gap-2"
               >
-                JOIN
-              </button>
-            </form>
+                <input 
+                  name="newsletter_email"
+                  type="email" 
+                  required
+                  placeholder="ENTER YOUR EMAIL"
+                  className="flex-1 bg-white/5 border border-white/10 px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-brand-red transition-all placeholder:text-white/20 text-white"
+                />
+                <button 
+                  type="submit"
+                  className="bg-white text-black px-8 py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-brand-red hover:text-white transition-all whitespace-nowrap"
+                >
+                  SUBSCRIBE
+                </button>
+              </form>
+              <p className="mt-3 text-[8px] font-bold text-white/20 uppercase tracking-widest text-left lg:text-right">
+                BY JOINING, YOU AGREE TO OUR PRIVACY POLICY
+              </p>
+            </div>
           </div>
         </div>
 
