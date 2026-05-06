@@ -55,6 +55,9 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             <Link to="/collections" className="text-xs uppercase tracking-widest font-medium text-white/60 hover:text-brand-red transition-colors">
               Archive
             </Link>
+            <Link to="/contact" className="text-xs uppercase tracking-widest font-medium text-white/60 hover:text-brand-red transition-colors">
+              Inquiry
+            </Link>
             {isAdmin && (
               <Link to="/admin" className="text-xs uppercase tracking-widest font-black text-brand-red animate-pulse">
                 Admin
@@ -138,6 +141,13 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Archive
+              </Link>
+              <Link 
+                to="/contact"
+                className="text-4xl font-display font-bold uppercase tracking-tighter text-white hover:text-brand-red transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Inquiry
               </Link>
               {isAdmin && (
                 <Link 

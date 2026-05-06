@@ -1,40 +1,62 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Mail, MessageSquare, Send, MapPin, Phone } from 'lucide-react';
-import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { Mail, MessageSquare, Send, MapPin, Phone, CheckCircle2, Clock } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import { Inquiry } from '../types';
 import { toast } from 'sonner';
 
 export const ContactPage: React.FC = () => {
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [myInquiries, setMyInquiries] = React.useState<Inquiry[]>([]);
   const [formData, setFormData] = React.useState({
     name: '',
     email: '',
     message: ''
   });
 
+  const fetchMyInquiries = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('inquiries')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('timestamp', { ascending: false });
+    
+    if (!error && data) {
+      setMyInquiries(data as Inquiry[]);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchMyInquiries();
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      toast.error('INCOMPLETE INTEL', { description: 'All fields are required.' });
+      toast.error('Please fill in all fields.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, 'inquiries'), {
+      const { error } = await supabase.from('inquiries').insert([{
         ...formData,
-        userId: auth.currentUser?.uid || 'guest',
-        timestamp: new Date().toISOString(),
-        status: 'pending'
-      });
+        user_id: user?.id || null,
+        timestamp: new Date().toISOString()
+      }]);
+
+      if (error) throw error;
       
-      toast.success('TRANSMISSION SENT', {
-        description: 'Your inquiry has been logged in our collective vault.',
+      toast.success('Message Sent', {
+        description: 'We have received your message and will get back to you soon.',
       });
       setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'inquiries');
+      fetchMyInquiries();
+    } catch (error: any) {
+      toast.error('Error sending message', { description: error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -43,45 +65,45 @@ export const ContactPage: React.FC = () => {
   return (
     <div className="pt-32 pb-24 min-h-screen bg-dark-bg">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
-          {/* Left Side: Editorial Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-24">
+          {/* Left Side: Contact Information */}
           <div className="max-w-xl">
-            <h1 className="text-6xl md:text-8xl font-display font-black tracking-tighter uppercase leading-[0.8] mb-12">
-              ESTABLISH <br />
-              <span className="text-brand-red italic text-5xl md:text-7xl">CONTACT</span>
+            <h1 className="text-6xl font-display font-black tracking-tighter uppercase leading-none mb-8">
+              GET IN <br />
+              <span className="text-brand-red italic">TOUCH</span>
             </h1>
             
-            <p className="text-white/40 text-lg leading-relaxed mb-16 uppercase tracking-widest font-medium">
-              WHETHER YOU ARE SEEKING ARCHIVE ACCESS, COLLABORATION PROTOCOLS, OR GENERAL INTEL, OUR TRANSMSISSION LINES ARE OPEN.
+            <p className="text-white/40 text-sm leading-relaxed mb-12 uppercase tracking-widest font-bold">
+              HAVE A QUESTION ABOUT A DROP OR YOUR ORDER? OUR TEAM IS HERE TO HELP YOU.
             </p>
 
-            <div className="grid grid-cols-1 gap-12">
-              <div className="flex items-start gap-6 group">
+            <div className="space-y-8">
+              <div className="flex items-center gap-6 group">
                 <div className="w-12 h-12 bg-dark-surface border border-dark-border flex items-center justify-center group-hover:border-brand-red transition-colors">
                   <MapPin size={20} className="text-brand-red" />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-red mb-2">Tactical Hub</h4>
-                  <p className="text-xs font-bold text-white uppercase tracking-widest">Nairobi, Kenya // Node 11</p>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Our Office</h4>
+                  <p className="text-xs font-bold text-white uppercase tracking-widest">Nairobi, Kenya</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-6 group">
+              <div className="flex items-center gap-6 group">
                 <div className="w-12 h-12 bg-dark-surface border border-dark-border flex items-center justify-center group-hover:border-brand-red transition-colors">
                   <Mail size={20} className="text-brand-red" />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-red mb-2">Comms Channel</h4>
-                  <p className="text-xs font-bold text-white uppercase tracking-widest">WICKLIFF@FINALL11.COM</p>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Email Support</h4>
+                  <p className="text-xs font-bold text-white uppercase tracking-widest">wickliff@finall11.com</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-6 group">
+              <div className="flex items-center gap-6 group">
                 <div className="w-12 h-12 bg-dark-surface border border-dark-border flex items-center justify-center group-hover:border-brand-red transition-colors">
                   <Phone size={20} className="text-brand-red" />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-red mb-2">Direct Signal</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Direct Line</h4>
                   <p className="text-xs font-bold text-white uppercase tracking-widest">+254 794 900 546</p>
                 </div>
               </div>
@@ -89,68 +111,97 @@ export const ContactPage: React.FC = () => {
           </div>
 
           {/* Right Side: Contact Form */}
-          <div className="bg-dark-surface border border-dark-border p-8 md:p-12 relative overflow-hidden">
-            {/* Background design elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/5 blur-[80px]" />
-            <div className="absolute bottom-0 left-0 w-48 h-1 bg-brand-red/20" />
-            
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-10">
-                <MessageSquare size={16} className="text-brand-red" />
-                <h3 className="text-xs font-black uppercase tracking-[0.4em]">Inquiry Protocol</h3>
+          <div className="bg-dark-surface border border-dark-border p-8 md:p-12">
+            <div className="flex items-center gap-3 mb-10">
+              <MessageSquare size={16} className="text-brand-red" />
+              <h3 className="text-xs font-black uppercase tracking-widest">Send us a message</h3>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Full Name</label>
+                <input 
+                  type="text"
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5 uppercase tracking-widest"
+                />
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Identity</label>
-                    <input 
-                      type="text"
-                      placeholder="NAME / SURNAME"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full bg-black border border-dark-border p-4 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Signal (Email)</label>
-                    <input 
-                      type="email"
-                      placeholder="YOUR@MAIL.COM"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full bg-black border border-dark-border p-4 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5"
-                    />
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Email Address</label>
+                <input 
+                  type="email"
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5 uppercase tracking-widest"
+                />
+              </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Transmission Intel</label>
-                  <textarea 
-                    placeholder="DESCRIBE YOUR REQUEST..."
-                    rows={6}
-                    value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    className="w-full bg-black border border-dark-border p-4 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5 resize-none"
-                  />
-                </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Your Message</label>
+                <textarea 
+                  placeholder="Tell us what you need..."
+                  rows={4}
+                  value={formData.message}
+                  onChange={(e) => setFormData({...formData, message: e.target.value})}
+                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5 resize-none uppercase tracking-widest"
+                />
+              </div>
 
-                <button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-white text-black py-5 font-black text-xs uppercase tracking-[0.3em] hover:bg-brand-red hover:text-white transition-all flex items-center justify-center gap-4 group"
-                >
-                  {isSubmitting ? 'TRANSMITTING...' : 'SEND TRANSMISSION'}
-                  <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                </button>
-              </form>
-              
-              <p className="mt-8 text-[8px] font-bold text-white/20 uppercase tracking-[0.3em] leading-relaxed">
-                By submitting this form, you acknowledge that your data will be stored securely in the Node 11 Collective database for protocol resolution.
-              </p>
-            </div>
+              <button 
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-white text-black py-4 font-black text-[10px] uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all flex items-center justify-center gap-3"
+              >
+                {isSubmitting ? 'Sending...' : 'Submit Message'}
+                <Send size={14} />
+              </button>
+            </form>
           </div>
         </div>
+
+        {/* Message History Section */}
+        {user && myInquiries.length > 0 && (
+          <div className="border-t border-dark-border pt-16">
+            <h2 className="text-2xl font-display font-black tracking-tighter uppercase mb-12">Your <span className="text-brand-red">Recent</span> Messages</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {myInquiries.map((inquiry) => (
+                <div key={inquiry.id} className="bg-dark-surface border border-dark-border p-8 relative group">
+                   <div className="flex justify-between items-start mb-6">
+                      <div className="flex items-center gap-3">
+                        {inquiry.response ? (
+                          <CheckCircle2 size={16} className="text-brand-red" />
+                        ) : (
+                          <Clock size={16} className="text-white/20" />
+                        )}
+                        <span className="text-[10px] font-black uppercase tracking-widest">
+                          {inquiry.response ? 'Response Received' : 'Pending Review'}
+                        </span>
+                      </div>
+                      <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest">
+                        {new Date(inquiry.timestamp).toLocaleDateString()}
+                      </span>
+                   </div>
+
+                   <div className="mb-6">
+                      <h4 className="text-[8px] font-black uppercase text-white/40 tracking-widest mb-2">Your Inquiry:</h4>
+                      <p className="text-xs text-white/60 italic leading-relaxed">"{inquiry.message}"</p>
+                   </div>
+
+                   {inquiry.response && (
+                     <div className="p-6 bg-black border border-brand-red/20 mt-4">
+                        <h4 className="text-[8px] font-black uppercase text-brand-red tracking-widest mb-3 underline">Our Reply:</h4>
+                        <p className="text-xs text-white leading-relaxed font-medium">{inquiry.response}</p>
+                     </div>
+                   )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
