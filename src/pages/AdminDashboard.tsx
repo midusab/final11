@@ -10,6 +10,7 @@ export const AdminDashboard: React.FC = () => {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [inquiries, setInquiries] = React.useState<Inquiry[]>([]);
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
+  const [offerConfig, setOfferConfig] = React.useState({ active: false, text: '', expiry: '' });
   const [loading, setLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'subscribers' | 'system'>('inventory');
@@ -96,7 +97,14 @@ export const AdminDashboard: React.FC = () => {
       setProducts(pList as Product[]);
       setInquiries(iList as Inquiry[]);
       setSubscribers(sList || []);
-      if (config) setMaintenanceMode(config.maintenance_mode);
+      if (config) {
+        setMaintenanceMode(config.maintenance_mode);
+        setOfferConfig({
+          active: config.offer_active || false,
+          text: config.offer_text || '',
+          expiry: config.offer_expiry || ''
+        });
+      }
     } catch (error: any) {
       toast.error('FETCH FAILED', { description: error.message });
     } finally {

@@ -8,6 +8,7 @@ import { SignIn } from './components/SignIn';
 import { Footer } from './components/Footer';
 import { ProductDetailsModal } from './components/ProductDetailsModal';
 import { LoadingSpinner } from './components/LoadingSpinner';
+import { OfferBanner } from './components/OfferBanner';
 import { PRODUCTS, Product, CartItem, Review } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
@@ -30,6 +31,7 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
   const [isProductsLoading, setIsProductsLoading] = React.useState(true);
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
+  const [offerConfig, setOfferConfig] = React.useState({ active: false, text: '', expiry: '' });
   const location = useLocation();
 
   React.useEffect(() => {
@@ -39,7 +41,7 @@ export default function App() {
           { data: productData, error: productError },
           { data: configData }
         ] = await Promise.all([
-          supabase.from('products').select('id, name, price, category, description, is_upcoming, promo_label').order('created_at', { ascending: false }),
+          supabase.from('products').select('*').order('created_at', { ascending: false }),
           supabase.from('app_config').select('*').eq('id', 'main').single()
         ]);
 
@@ -57,7 +59,14 @@ export default function App() {
           }
         }
 
-        if (configData) setMaintenanceMode(configData.maintenance_mode);
+        if (configData) {
+          setMaintenanceMode(configData.maintenance_mode);
+          setOfferConfig({
+            active: configData.offer_active || false,
+            text: configData.offer_text || '',
+            expiry: configData.offer_expiry || ''
+          });
+        }
       } catch (e) {
         console.warn('System data fetch failed:', e);
       } finally {
@@ -172,6 +181,11 @@ export default function App() {
           },
           className: 'uppercase tracking-widest text-[10px] font-black'
         }}
+      />
+      <OfferBanner 
+        active={offerConfig.active} 
+        text={offerConfig.text} 
+        expiryDate={offerConfig.expiry}
       />
       <Navbar 
         cartCount={cartItems.reduce((s, i) => s + i.quantity, 0)} 
