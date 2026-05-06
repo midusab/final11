@@ -2,7 +2,7 @@ import React from 'react';
 import { supabase } from '../lib/supabase';
 import { Product, Inquiry } from '../types';
 import { motion } from 'motion/react';
-import { Plus, Trash2, Tag, Calendar, Mail, MessageSquare, Save, X, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Tag, Calendar, Mail, MessageSquare, Save, X, AlertCircle, CheckCircle2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 
@@ -139,14 +139,34 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const [promoEditing, setPromoEditing] = React.useState<string | null>(null);
+  const [promoInput, setPromoInput] = React.useState('');
+  const [replyingTo, setReplyingTo] = React.useState<string | null>(null);
+  const [replyText, setReplyText] = React.useState('');
+
   const handleUpdatePromo = async (id: string, label: string) => {
     try {
       const { error } = await supabase.from('products').update({ promo_label: label }).eq('id', id);
       if (error) throw error;
       toast.success('PROMO UPDATED');
+      setPromoEditing(null);
       fetchData();
     } catch (error: any) {
       toast.error('UPDATE FAILED', { description: error.message });
+    }
+  };
+
+  const handleReplySubmit = async (id: string) => {
+    if (!replyText.trim()) return;
+    try {
+      const { error } = await supabase.from('inquiries').update({ response: replyText }).eq('id', id);
+      if (error) throw error;
+      toast.success('RESPONSE TRANSMITTED');
+      setReplyingTo(null);
+      setReplyText('');
+      fetchData();
+    } catch (error: any) {
+      toast.error('TRANSMISSION FAILED', { description: error.message });
     }
   };
 
@@ -335,22 +355,56 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                       <p className="text-xs font-bold text-white/20 uppercase mb-4">KES {p.price.toLocaleString()}</p>
                       
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button 
                           onClick={() => handleToggleUpcoming(p.id, p.is_upcoming || false)}
-                          className={`text-xs px-2 py-1 uppercase font-black tracking-widest border ${p.is_upcoming ? 'bg-brand-red text-white border-brand-red' : 'border-white/10 text-white/20'}`}
+                          className={`text-[8px] px-2 py-1 uppercase font-black tracking-widest border transition-all ${p.is_upcoming ? 'bg-brand-red text-white border-brand-red' : 'border-white/10 text-white/20'}`}
                         >
                           Upcoming
                         </button>
-                        <button 
-                          onClick={() => {
-                            const l = prompt('PROMO LABEL:', p.promo_label || '');
-                            if (l !== null) handleUpdatePromo(p.id, l);
-                          }}
-                          className="text-[8px] px-2 py-1 uppercase font-black tracking-widest border border-white/10 text-white/20 hover:text-white hover:border-white"
-                        >
-                          Promo
-                        </button>
+                        
+                        {promoEditing === p.id ? (
+                          <div className="flex flex-col gap-2 w-full mt-2 p-3 bg-black border border-brand-red/30">
+                            <div className="flex flex-wrap gap-1">
+                              {['HOT DROP', 'LIMITED', 'SOLD OUT', 'NEW'].map(tag => (
+                                <button 
+                                  key={tag}
+                                  onClick={() => handleUpdatePromo(p.id, tag)}
+                                  className="text-[7px] font-black px-2 py-1 bg-white/5 border border-white/10 hover:border-brand-red hover:text-brand-red transition-all"
+                                >
+                                  {tag}
+                                </button>
+                              ))}
+                              <button 
+                                onClick={() => handleUpdatePromo(p.id, '')}
+                                className="text-[7px] font-black px-2 py-1 bg-brand-red/20 text-brand-red border border-brand-red/20"
+                              >
+                                CLEAR
+                              </button>
+                            </div>
+                            <div className="flex gap-1 mt-1">
+                              <input 
+                                autoFocus
+                                value={promoInput}
+                                onChange={e => setPromoInput(e.target.value)}
+                                placeholder="CUSTOM..."
+                                className="bg-dark-surface border border-dark-border text-[8px] px-2 py-1 flex-1 outline-none focus:border-brand-red"
+                                onKeyDown={e => e.key === 'Enter' && handleUpdatePromo(p.id, promoInput)}
+                              />
+                              <button onClick={() => setPromoEditing(null)} className="text-white/20 hover:text-white"><X size={12}/></button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button 
+                            onClick={() => {
+                              setPromoEditing(p.id);
+                              setPromoInput(p.promo_label || '');
+                            }}
+                            className="text-[8px] px-2 py-1 uppercase font-black tracking-widest border border-white/10 text-white/20 hover:text-white hover:border-white transition-all"
+                          >
+                            {p.promo_label || 'Add Promo'}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -379,28 +433,50 @@ export const AdminDashboard: React.FC = () => {
                   <p className="text-xs text-white/60 leading-relaxed italic mb-8">"{i.message}"</p>
                   
                   {i.response ? (
-                    <div className="p-4 bg-black border border-brand-red/20">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-brand-red mb-2 underline">Your Intel</p>
-                      <p className="text-xs text-white/80">{i.response}</p>
+                    <div className="p-6 bg-black border border-brand-red/20 mt-4">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-brand-red mb-3 underline flex items-center gap-2">
+                        <CheckCircle2 size={10} /> Your Response
+                      </p>
+                      <p className="text-xs text-white/80 italic leading-relaxed">{i.response}</p>
                     </div>
                   ) : (
-                    <button 
-                      onClick={async () => {
-                        const r = prompt('YOUR RESPONSE:');
-                        if (r) {
-                             const { error } = await supabase.from('inquiries').update({ response: r }).eq('id', i.id);
-                             if (error) {
-                               toast.error('TRANSMISSION FAILED');
-                             } else {
-                               toast.success('RESPONSE TRANSMITTED');
-                               fetchData();
-                             }
-                        }
-                      }}
-                      className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors"
-                    >
-                      <MessageSquare size={12} /> Respond to Inquiry
-                    </button>
+                    <div className="mt-6">
+                      {replyingTo === i.id ? (
+                        <div className="space-y-4 p-4 bg-black border border-dark-border animate-in fade-in slide-in-from-top-2">
+                          <textarea
+                            autoFocus
+                            value={replyText}
+                            onChange={e => setReplyText(e.target.value)}
+                            placeholder="DRAFT YOUR RESPONSE..."
+                            className="w-full bg-dark-surface border border-dark-border p-3 text-xs font-medium text-white placeholder:text-white/10 outline-none focus:border-brand-red min-h-[100px] resize-none"
+                          />
+                          <div className="flex justify-end gap-3">
+                            <button 
+                              onClick={() => setReplyingTo(null)}
+                              className="text-[10px] font-black uppercase text-white/20 hover:text-white transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              onClick={() => handleReplySubmit(i.id)}
+                              className="px-6 py-2 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all flex items-center gap-2"
+                            >
+                              Transmit <Send size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={() => {
+                            setReplyingTo(i.id);
+                            setReplyText('');
+                          }}
+                          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-brand-red transition-all"
+                        >
+                          <MessageSquare size={14} /> Respond to Inquiry
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               ))
