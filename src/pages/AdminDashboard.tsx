@@ -128,7 +128,7 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('EXTERMINATE PRODUCT?')) return;
+    if (!confirm('DELETE PRODUCT?')) return;
     try {
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
@@ -272,11 +272,11 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Intel / Technical Details</label>
+                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Product Specifications</label>
                   <div className="flex gap-2 mb-3">
                     <input 
                       type="text" value={detailInput} onChange={e => setDetailInput(e.target.value)}
-                      placeholder="ADD SPEC..."
+                      placeholder="E.G. OVERSIZED FIT"
                       className="flex-1 bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
                     />
                     <button type="button" onClick={addDetail} className="bg-dark-border px-4 hover:bg-brand-red transition-colors">
@@ -322,7 +322,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Brief Intel</label>
+                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Description</label>
                   <textarea 
                     value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})}
                     className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none min-h-[100px] resize-none"
@@ -426,9 +426,9 @@ export const AdminDashboard: React.FC = () => {
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <h4 className="text-sm font-black uppercase tracking-tight text-brand-red mb-1">{i.name}</h4>
-                      <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{i.email}</p>
+                      <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">{i.email}</p>
                     </div>
-                    <span className="text-[10px] font-bold text-white/10 uppercase tracking-widest font-mono">{i.timestamp}</span>
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest font-mono">{i.timestamp}</span>
                   </div>
                   <p className="text-xs text-white/60 leading-relaxed italic mb-8">"{i.message}"</p>
                   
