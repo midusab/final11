@@ -12,7 +12,7 @@ import {
   updateProfile,
   User
 } from '../lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocFromServer } from 'firebase/firestore';
 import { toast } from 'sonner';
 
 interface AuthContextType {
@@ -34,15 +34,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setUser(user);
+      
+      if (user) {
         try {
-          const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
-          const isAuthAdmin = adminDoc.exists() || (currentUser.email === "midusab@gmail.com" && currentUser.emailVerified);
-          setIsAdmin(isAuthAdmin);
+          const adminEmail = 'midusab@gmail.com';
+          const isPrimaryAdmin = user.email === adminEmail;
+          
+          console.log('Auth State Changed - User:', user.email);
+          console.log('Is Primary Admin:', isPrimaryAdmin);
+
+          // Try to check Firestore, but don't let it block if it fails
+          let isSecondaryAdmin = false;
+          try {
+            const adminDoc = await getDocFromServer(doc(db, 'admins', user.uid));
+            isSecondaryAdmin = adminDoc.exists();
+          } catch (e) {
+            console.warn('Firestore admin check skipped or failed:', e);
+          }
+
+          const finalAdminStatus = isPrimaryAdmin || isSecondaryAdmin;
+          console.log('Final Admin Status:', finalAdminStatus);
+          setIsAdmin(finalAdminStatus);
         } catch (error) {
-          console.error("Admin check failed:", error);
+          console.error('Error in admin verification:', error);
           setIsAdmin(false);
         }
       } else {

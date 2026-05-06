@@ -268,14 +268,14 @@ export default function App() {
                       "Finall 11 was born from the intersection of raw ghetto culture and the discipline of international sports. We design for those who move between these worlds with silent confidence."
                     </p>
                     <div className="grid grid-cols-2 gap-8">
-                       <div className="p-4 border border-dark-border">
+                        <div className="p-4 border border-dark-border">
                           <p className="text-xs font-black text-brand-red uppercase mb-1">Pillar I</p>
                           <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Urban Authenticity</p>
-                       </div>
-                       <div className="p-4 border border-dark-border">
+                        </div>
+                        <div className="p-4 border border-dark-border">
                           <p className="text-xs font-black text-brand-red uppercase mb-1">Pillar II</p>
                           <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Sport Excellence</p>
-                       </div>
+                        </div>
                     </div>
                   </div>
                 </div>

@@ -31,22 +31,23 @@ export const Hero: React.FC = () => {
           <span className="h-px w-12 bg-brand-red" />
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-[12vw] md:text-[8vw] font-display font-black leading-[0.85] tracking-tighter uppercase text-white mb-8"
-        >
-          FINALL <span className="text-brand-red italic block md:inline md:not-italic">11</span>
-        </motion.h1>
-
-        <motion.p
+        <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="max-w-xl text-white/50 text-sm md:text-base leading-relaxed mb-10 uppercase tracking-widest font-medium"
+          transition={{ delay: 0.2 }}
+          className="text-5xl md:text-8xl font-display font-black tracking-tighter uppercase mb-6 leading-[0.85]"
         >
-          Redefining the silhouette of international sports through the lens of urban ghetto culture.
+          THE DIGITAL <br />
+          <span className="text-brand-red">ARCHIVE</span>
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-sm md:text-base text-white/40 max-w-lg mb-10 uppercase tracking-[0.3em] font-medium leading-relaxed"
+        >
+          Premium Streetwear & Sport Excellence. <br />
+          Curated by Wickliff Miles.
         </motion.p>
 
         <motion.div

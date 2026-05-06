@@ -228,15 +228,15 @@ export const AdminDashboard: React.FC = () => {
                     <img src={p.image} className="w-20 h-20 object-cover grayscale brightness-50 group-hover:grayscale-0 transition-all" />
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-xs font-black uppercase tracking-widest">{p.name}</h4>
+                        <h4 className="text-sm font-black uppercase tracking-widest">{p.name}</h4>
                         <button onClick={() => handleDeleteProduct(p.id)} className="text-white/10 hover:text-brand-red transition-colors"><Trash2 size={14}/></button>
                       </div>
-                      <p className="text-[10px] font-bold text-white/20 uppercase mb-4">KES {p.price.toLocaleString()}</p>
+                      <p className="text-xs font-bold text-white/20 uppercase mb-4">KES {p.price.toLocaleString()}</p>
                       
                       <div className="flex gap-2">
                         <button 
                           onClick={() => handleToggleUpcoming(p.id, p.isUpcoming || false)}
-                          className={`text-[8px] px-2 py-1 uppercase font-black tracking-widest border ${p.isUpcoming ? 'bg-brand-red text-white border-brand-red' : 'border-white/10 text-white/20'}`}
+                          className={`text-xs px-2 py-1 uppercase font-black tracking-widest border ${p.isUpcoming ? 'bg-brand-red text-white border-brand-red' : 'border-white/10 text-white/20'}`}
                         >
                           Upcoming
                         </button>

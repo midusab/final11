@@ -17,6 +17,12 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
+    if (user) {
+      console.log('Navbar - User:', user.email, 'isAdmin:', isAdmin);
+    }
+  }, [user, isAdmin]);
+
+  React.useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
