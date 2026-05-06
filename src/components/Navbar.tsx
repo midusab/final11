@@ -72,20 +72,19 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             <div className="flex items-center gap-4">
               <div className="hidden lg:flex flex-col items-end">
                  <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none mb-1">
-                   {user.displayName?.split(' ')[0] || 'Member'}
+                   {user.user_metadata?.full_name?.split(' ')[0] || 'Member'}
                  </span>
-                 <button 
-                  onClick={logout} 
-                  title="Logout"
-                  className="text-white/40 hover:text-brand-red transition-all flex items-center gap-1 group"
-                >
-                   <span className="text-[8px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Term_Exit</span>
-                   <LogOut size={12} />
-                 </button>
               </div>
               <div className="w-8 h-8 rounded-full border border-dark-border overflow-hidden">
-                 <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'U'}&background=000&color=fff`} alt="User" className="w-full h-full object-cover" />
+                 <img src={user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user.user_metadata?.full_name || 'U'}&background=000&color=fff`} alt="User" className="w-full h-full object-cover" />
               </div>
+              <button 
+                onClick={logout} 
+                title="Logout"
+                className="text-white/40 hover:text-brand-red transition-all p-1"
+              >
+                <LogOut size={18} />
+              </button>
             </div>
           ) : (
             <button 

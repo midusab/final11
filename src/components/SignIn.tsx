@@ -200,4 +200,7 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
             </div>
           </motion.div>
         </>
-     
+      )}
+    </AnimatePresence>
+  );
+};
