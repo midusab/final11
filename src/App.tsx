@@ -289,64 +289,66 @@ export default function App() {
           <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <ProductsPage products={products} onAddToCart={addToCart} onViewDetails={setSelectedProduct} />} />
         </Routes>
 
-        {/* Newsletter Section - Keep on both */}
-        <section className="py-32 border-t border-dark-border">
-          <div className="max-w-3xl mx-auto px-6 text-center">
-            <h4 className="text-4xl font-display font-black tracking-tighter uppercase mb-6">Join the Collective</h4>
-            <p className="text-white/40 mb-10 text-sm tracking-wide">Be the first to know about Drop 02 and exclusive access keys.</p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <input 
-                id="newsletter-email"
-                type="email" 
-                placeholder="YOUR EMAIL" 
-                className="flex-1 bg-dark-surface border border-dark-border px-6 py-4 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-red transition-colors"
-                onKeyDown={async (e) => {
-                  if (e.key === 'Enter') {
-                    if (user) {
-                        try {
-                            await addDoc(collection(db, 'inquiries'), {
-                                userId: user.uid,
-                                name: user.displayName,
-                                email: user.email,
-                                message: 'Newsletter Subscription Request',
-                                timestamp: new Date().toISOString()
-                            });
-                        } catch (error) {
-                            console.error(error);
-                        }
+        {/* Newsletter Section - Hidden on Admin Dashboard */}
+        {!location.pathname.startsWith('/admin') && (
+          <section className="py-32 border-t border-dark-border">
+            <div className="max-w-3xl mx-auto px-6 text-center">
+              <h4 className="text-4xl font-display font-black tracking-tighter uppercase mb-6">Join the Collective</h4>
+              <p className="text-white/40 mb-10 text-sm tracking-wide">Be the first to know about Drop 02 and exclusive access keys.</p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <input 
+                  id="newsletter-email"
+                  type="email" 
+                  placeholder="YOUR EMAIL" 
+                  className="flex-1 bg-dark-surface border border-dark-border px-6 py-4 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-red transition-colors"
+                  onKeyDown={async (e) => {
+                    if (e.key === 'Enter') {
+                      if (user) {
+                          try {
+                              await addDoc(collection(db, 'inquiries'), {
+                                  userId: user.uid,
+                                  name: user.displayName,
+                                  email: user.email,
+                                  message: 'Newsletter Subscription Request',
+                                  timestamp: new Date().toISOString()
+                              });
+                          } catch (error) {
+                              console.error(error);
+                          }
+                      }
+                      toast.success('ACCESS GRANTED', {
+                        description: 'Member Key has been sent to your email.',
+                      });
                     }
+                  }}
+                />
+                <button 
+                  onClick={async () => {
+                     if (user) {
+                          try {
+                              await addDoc(collection(db, 'inquiries'), {
+                                  userId: user.uid,
+                                  name: user.displayName,
+                                  email: user.email,
+                                  message: 'Newsletter Subscription Request',
+                                  timestamp: new Date().toISOString()
+                              });
+                          } catch (error) {
+                              console.error(error);
+                          }
+                      }
                     toast.success('ACCESS GRANTED', {
                       description: 'Member Key has been sent to your email.',
                     });
-                  }
-                }}
-              />
-              <button 
-                onClick={async () => {
-                   if (user) {
-                        try {
-                            await addDoc(collection(db, 'inquiries'), {
-                                userId: user.uid,
-                                name: user.displayName,
-                                email: user.email,
-                                message: 'Newsletter Subscription Request',
-                                timestamp: new Date().toISOString()
-                            });
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    }
-                  toast.success('ACCESS GRANTED', {
-                    description: 'Member Key has been sent to your email.',
-                  });
-                }}
-                className="bg-white text-black px-10 py-4 font-black text-xs uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all whitespace-nowrap"
-              >
-                Submit Key
-              </button>
+                  }}
+                  className="bg-white text-black px-10 py-4 font-black text-xs uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all whitespace-nowrap"
+                >
+                  Submit Key
+                </button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer />

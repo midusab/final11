@@ -5,12 +5,14 @@ import { Product, Inquiry } from '../types';
 import { motion } from 'motion/react';
 import { Plus, Trash2, Tag, Calendar, Mail, MessageSquare, Save, X, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 export const AdminDashboard: React.FC = () => {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [inquiries, setInquiries] = React.useState<Inquiry[]>([]);
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'system'>('inventory');
 
   // Form states for new product
@@ -22,9 +24,37 @@ export const AdminDashboard: React.FC = () => {
     description: '',
     details: [],
     material: '',
-    sizes: ['S', 'M', 'L', 'XL'],
+    sizes: [],
     reviews: []
   });
+  const [detailInput, setDetailInput] = React.useState('');
+
+  const addDetail = () => {
+    if (detailInput.trim()) {
+      setNewProduct(prev => ({
+        ...prev,
+        details: [...(prev.details || []), detailInput.trim()]
+      }));
+      setDetailInput('');
+    }
+  };
+
+  const removeDetail = (index: number) => {
+    setNewProduct(prev => ({
+      ...prev,
+      details: prev.details?.filter((_, i) => i !== index)
+    }));
+  };
+
+  const toggleSize = (size: string) => {
+    setNewProduct(prev => {
+      const currentSizes = prev.sizes || [];
+      const newSizes = currentSizes.includes(size)
+        ? currentSizes.filter(s => s !== size)
+        : [...currentSizes, size];
+      return { ...prev, sizes: newSizes };
+    });
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -69,6 +99,16 @@ export const AdminDashboard: React.FC = () => {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newProduct.image) {
+      toast.error('MISSING ASSET', { description: 'Please upload or paste an image URL.' });
+      return;
+    }
+    if ((newProduct.sizes?.length || 0) === 0) {
+      toast.error('SIZE SELECTION REQUIRED');
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       await addDoc(collection(db, 'products'), {
         ...newProduct,
@@ -77,10 +117,12 @@ export const AdminDashboard: React.FC = () => {
       toast.success('PRODUCT ADDED');
       fetchData();
       setNewProduct({
-        name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: ['S', 'M', 'L', 'XL'], reviews: []
+        name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: []
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'products');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -115,11 +157,7 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  if (loading) return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-      <div className="text-brand-red font-display font-black text-4xl animate-pulse">11_SYSTEM_LOADING</div>
-    </div>
-  );
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-dark-bg">
@@ -148,7 +186,7 @@ export const AdminDashboard: React.FC = () => {
         {activeTab === 'inventory' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Add Product Form */}
-            <div className="lg:col-span-1 p-8 bg-dark-surface border border-dark-border">
+            <div className="lg:col-span-1 p-8 bg-dark-surface border border-dark-border h-fit sticky top-32">
               <h3 className="text-lg font-display font-black uppercase tracking-tight mb-8 flex items-center gap-2">
                 <Plus size={20} className="text-brand-red" /> New Inventory
               </h3>
@@ -181,8 +219,60 @@ export const AdminDashboard: React.FC = () => {
                     </select>
                   </div>
                 </div>
+
                 <div>
-                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Product Image (Upload or URL)</label>
+                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Fabric / Material</label>
+                  <input 
+                    type="text" required value={newProduct.material} onChange={e => setNewProduct({...newProduct, material: e.target.value})}
+                    placeholder="E.G. 100% ORGANIC COTTON"
+                    className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Size Run</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['S', 'M', 'L', 'XL', 'XXL', 'ONE SIZE'].map(size => (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => toggleSize(size)}
+                        className={`py-2 text-[10px] font-black border transition-all ${
+                          newProduct.sizes?.includes(size) ? 'bg-brand-red border-brand-red text-white' : 'border-dark-border text-white/20'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Intel / Technical Details</label>
+                  <div className="flex gap-2 mb-3">
+                    <input 
+                      type="text" value={detailInput} onChange={e => setDetailInput(e.target.value)}
+                      placeholder="ADD SPEC..."
+                      className="flex-1 bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
+                    />
+                    <button type="button" onClick={addDetail} className="bg-dark-border px-4 hover:bg-brand-red transition-colors">
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {newProduct.details?.map((detail, idx) => (
+                      <div key={idx} className="flex justify-between items-center bg-black border border-dark-border p-2">
+                        <span className="text-[9px] font-bold text-white/60 uppercase">{detail}</span>
+                        <button type="button" onClick={() => removeDetail(idx)} className="text-white/20 hover:text-brand-red">
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Visual Asset</label>
                   <div className="flex flex-col gap-4">
                     {newProduct.image && (
                       <div className="w-full aspect-square border border-dark-border overflow-hidden bg-black">
@@ -214,8 +304,16 @@ export const AdminDashboard: React.FC = () => {
                     className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none min-h-[100px] resize-none"
                   />
                 </div>
-                <button type="submit" className="w-full bg-white text-black py-4 text-[10px] font-black uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all">
-                  Initialize Drop
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className={`w-full py-4 text-[10px] font-black uppercase tracking-widest transition-all ${
+                    isSubmitting 
+                    ? 'bg-brand-red/50 text-white animate-pulse cursor-wait' 
+                    : 'bg-white text-black hover:bg-brand-red hover:text-white'
+                  }`}
+                >
+                  {isSubmitting ? 'Transmitting_Data...' : 'Initialize Drop'}
                 </button>
               </form>
             </div>

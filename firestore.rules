@@ -18,7 +18,7 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        (request.auth.token.email == "midusab@gmail.com" && request.auth.token.email_verified == true)
+        request.auth.token.email == "midusab@gmail.com"
       );
     }
 
@@ -42,7 +42,7 @@ service cloud.firestore {
         return data.name is string && data.name.size() > 0 && data.name.size() <= 100
             && data.price is number && data.price >= 0
             && data.category is string
-            && data.image is string && data.image.size() <= 1000
+            && data.image is string && data.image.size() <= 1000000
             && (!data.keys().hasAny(['promoLabel']) || data.promoLabel is string)
             && (!data.keys().hasAny(['isUpcoming']) || data.isUpcoming is bool);
       }

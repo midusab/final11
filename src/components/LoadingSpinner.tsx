@@ -1,25 +1,47 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { cn } from '../lib/utils';
 
-export const LoadingSpinner: React.FC = () => {
+interface LoadingSpinnerProps {
+  fullScreen?: boolean;
+  className?: string;
+}
+
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ fullScreen = true, className }) => {
   return (
-    <div className="fixed inset-0 z-[1000] bg-dark-bg flex items-center justify-center">
-      <div className="relative flex items-center justify-center">
-        {/* Outer rotating ring */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-          className="w-24 h-24 border-2 border-transparent border-t-brand-red rounded-full shadow-[0_0_15px_rgba(255,0,0,0.5)]"
-        />
+    <div className={cn(
+      "flex items-center justify-center bg-dark-bg",
+      fullScreen ? "fixed inset-0 z-[1000]" : "w-full h-full min-h-[200px]",
+      className
+    )}>
+      <div className="relative flex flex-col items-center gap-4">
+        <div className="relative w-16 h-16">
+          {/* Animated border segments */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 border-t-2 border-brand-red rounded-full"
+          />
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-2 border-b-2 border-white/10 rounded-full"
+          />
+          
+          {/* Central 11 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-xl font-display font-black tracking-tighter text-white">11</span>
+          </div>
+        </div>
         
-        {/* Inner static/pulsing 11 */}
-        <motion.div 
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute text-4xl font-display font-black tracking-tighter text-white"
+        {/* Terminal loading text */}
+        <motion.p
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="text-[8px] font-black uppercase tracking-[0.4em] text-white/30"
         >
-          11
-        </motion.div>
+          Transmitting_Data
+        </motion.p>
       </div>
     </div>
   );
