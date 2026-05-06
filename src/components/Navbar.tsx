@@ -3,19 +3,16 @@ import { ShoppingBag, Search, Menu, X, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
-
-import { User as FirebaseUser } from 'firebase/auth';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NavbarProps {
   cartCount: number;
   onCartClick: () => void;
   onSignInClick: () => void;
-  user: FirebaseUser | null;
-  isAdmin: boolean;
-  onSignOut: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignInClick, user, isAdmin, onSignOut }) => {
+export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignInClick }) => {
+  const { user, isAdmin, logout } = useAuth();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
@@ -69,14 +66,14 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             <div className="flex items-center gap-4">
               <div className="hidden lg:flex flex-col items-end">
                  <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none mb-1">
-                   {user.displayName?.split(' ')[0]}
+                   {user.displayName?.split(' ')[0] || 'Member'}
                  </span>
-                 <button onClick={onSignOut} className="text-[8px] font-bold text-white/40 hover:text-brand-red uppercase tracking-widest">
+                 <button onClick={logout} className="text-[8px] font-bold text-white/40 hover:text-brand-red uppercase tracking-widest">
                    Term_Exit
                  </button>
               </div>
               <div className="w-8 h-8 rounded-full border border-dark-border overflow-hidden">
-                 <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}`} alt="User" className="w-full h-full object-cover" />
+                 <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'U'}&background=000&color=fff`} alt="User" className="w-full h-full object-cover" />
               </div>
             </div>
           ) : (
@@ -132,6 +129,26 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
               >
                 Archive
               </Link>
+              {isAdmin && (
+                <Link 
+                  to="/admin"
+                  className="text-4xl font-display font-bold uppercase tracking-tighter text-brand-red transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+              )}
+              {user && (
+                <button 
+                  onClick={() => {
+                    logout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="text-left text-4xl font-display font-bold uppercase tracking-tighter text-white/40 hover:text-brand-red transition-colors"
+                >
+                  Logout
+                </button>
+              )}
             </div>
           </motion.div>
         )}

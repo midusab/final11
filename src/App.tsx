@@ -16,37 +16,20 @@ import { ContactWidgets } from './components/ContactWidgets';
 import { PRODUCTS, Product, CartItem, Review } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
-import { auth, db, googleProvider, handleFirestoreError, OperationType } from './lib/firebase';
-import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, arrayUnion, setDoc, getDoc, addDoc } from 'firebase/firestore';
+import { useAuth } from './contexts/AuthContext';
+import { db, handleFirestoreError, OperationType } from './lib/firebase';
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, arrayUnion, setDoc, addDoc } from 'firebase/firestore';
 
 export default function App() {
+  const { user, isAdmin, loading: isAuthLoading, logout } = useAuth();
   const [products, setProducts] = React.useState<Product[]>([]);
   const [cartItems, setCartItems] = React.useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isSignInOpen, setIsSignInOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
-  const [user, setUser] = React.useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = React.useState(false);
-  const [isAppLoading, setIsAppLoading] = React.useState(true);
+  const [isProductsLoading, setIsProductsLoading] = React.useState(true);
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
   const location = useLocation();
-
-  // Firebase Auth Listener
-  React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        // Check if admin doc exists OR if this is the bootstrapped admin email
-        const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
-        const isAuthAdmin = adminDoc.exists() || (currentUser.email === "midusab@gmail.com" && currentUser.emailVerified);
-        setIsAdmin(isAuthAdmin);
-      } else {
-        setIsAdmin(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   // Firestore Data Listeners
   React.useEffect(() => {
@@ -70,11 +53,10 @@ export default function App() {
       } else {
         setProducts(pList);
       }
-      setIsAppLoading(false);
+      setIsProductsLoading(false);
     }, (err) => {
-      // Don't throw if it's just a permission error on the list (though products should be public read)
       console.error("Products listener error:", err);
-      setIsAppLoading(false);
+      setIsProductsLoading(false);
     });
 
     // Listen to config
@@ -88,7 +70,7 @@ export default function App() {
       unsubProducts();
       unsubConfig();
     };
-  }, []);
+  }, [isAdmin]);
 
   const handleReviewSubmit = async (productId: string, rating: number, comment: string) => {
     if (!user) {
@@ -115,21 +97,6 @@ export default function App() {
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `products/${productId}`);
     }
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-      setIsSignInOpen(false);
-      toast.success('AUTHENTICATED');
-    } catch (error) {
-      toast.error('AUTH FAILED');
-    }
-  };
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    toast.success('SIGNED OUT');
   };
 
   const handleCheckout = () => {
@@ -178,7 +145,7 @@ export default function App() {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  if (isAppLoading) return <LoadingSpinner />;
+  if (isAuthLoading || isProductsLoading) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-dark-bg selection:bg-brand-red selection:text-white">
@@ -221,9 +188,6 @@ export default function App() {
         cartCount={cartItems.reduce((s, i) => s + i.quantity, 0)} 
         onCartClick={() => setIsCartOpen(true)} 
         onSignInClick={() => setIsSignInOpen(true)}
-        user={user}
-        isAdmin={isAdmin}
-        onSignOut={handleSignOut}
       />
       
       <main>
@@ -400,7 +364,6 @@ export default function App() {
       <SignIn 
         isOpen={isSignInOpen}
         onClose={() => setIsSignInOpen(false)}
-        onGoogleSignIn={handleGoogleSignIn}
       />
 
       <ProductDetailsModal 
