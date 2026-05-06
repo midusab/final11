@@ -17,6 +17,8 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const isPasswordValid = password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password) && /[@$!%*?&]/.test(password);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -158,11 +160,28 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
                       className="w-full bg-dark-surface border border-dark-border py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:border-brand-red transition-colors"
                     />
                   </div>
+
+                  {/* Password Security Intel */}
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {[
+                      { label: '8+ CHARACTERS', met: password.length >= 8 },
+                      { label: 'UPPERCASE', met: /[A-Z]/.test(password) },
+                      { label: 'NUMBER', met: /\d/.test(password) },
+                      { label: 'SPECIAL SYMBOL', met: /[@$!%*?&]/.test(password) }
+                    ].map((req, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <div className={`w-1 h-1 rounded-full ${req.met ? 'bg-brand-red' : 'bg-white/10'}`} />
+                        <span className={`text-[7px] font-black uppercase tracking-widest ${req.met ? 'text-white' : 'text-white/20'}`}>
+                          {req.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <button 
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || (isRegistering && !isPasswordValid)}
                   className="bg-brand-red hover:bg-brand-red-hover text-white py-5 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? 'PROCESSING...' : (isRegistering ? 'CREATE ACCOUNT' : 'AUTHENTICATE')}
@@ -181,7 +200,4 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
             </div>
           </motion.div>
         </>
-      )}
-    </AnimatePresence>
-  );
-};
+     

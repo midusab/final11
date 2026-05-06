@@ -56,17 +56,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
 
         {/* Jumia-style badges */}
         <div className="absolute top-0 left-0 flex flex-col gap-1 p-2">
-          {product.isUpcoming && (
+          {product.is_upcoming && (
             <div className="bg-white text-black text-[8px] font-black px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap animate-pulse">
               UPCOMING
             </div>
           )}
-          {product.promoLabel && (
+          {product.promo_label && (
             <div className="bg-brand-red text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
-              {product.promoLabel}
+              {product.promo_label}
             </div>
           )}
-          {!product.promoLabel && (
+          {!product.promo_label && (
             <div className="bg-white/10 backdrop-blur-sm text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
               F 11 EXCLUSIVE
             </div>

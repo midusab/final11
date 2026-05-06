@@ -1,18 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  auth, 
-  db, 
-  googleProvider, 
-  onAuthStateChanged, 
-  signInWithPopup, 
-  signOut,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  updateProfile,
-  User
-} from '../lib/firebase';
-import { doc, getDoc, getDocFromServer } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
+import { User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
 interface AuthContextType {
@@ -34,46 +22,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      
-      if (user) {
-        try {
-          const adminEmail = 'midusab@gmail.com';
-          const isPrimaryAdmin = user.email === adminEmail;
-          
-          console.log('Auth State Changed - User:', user.email);
-          console.log('Is Primary Admin:', isPrimaryAdmin);
+    // Check active sessions and sets the user
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdminStatus(session.user);
+      }
+      setLoading(false);
+    });
 
-          // Try to check Firestore, but don't let it block if it fails
-          let isSecondaryAdmin = false;
-          try {
-            const adminDoc = await getDocFromServer(doc(db, 'admins', user.uid));
-            isSecondaryAdmin = adminDoc.exists();
-          } catch (e) {
-            console.warn('Firestore admin check skipped or failed:', e);
-          }
-
-          const finalAdminStatus = isPrimaryAdmin || isSecondaryAdmin;
-          console.log('Final Admin Status:', finalAdminStatus);
-          setIsAdmin(finalAdminStatus);
-        } catch (error) {
-          console.error('Error in admin verification:', error);
-          setIsAdmin(false);
-        }
+    // Listen for changes on auth state
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        checkAdminStatus(currentUser);
       } else {
         setIsAdmin(false);
       }
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => subscription.unsubscribe();
   }, []);
+
+  const checkAdminStatus = async (user: User) => {
+    try {
+      const adminEmail = 'midusab@gmail.com';
+      const isPrimaryAdmin = user.email === adminEmail;
+      
+      console.log('Auth Context - Checking Admin for:', user.email);
+
+      // Check profiles table for admin flag
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (error && !isPrimaryAdmin) {
+        console.warn('Profile check failed, but primary email may still match.');
+      }
+
+      const finalAdminStatus = isPrimaryAdmin || (data?.is_admin ?? false);
+      console.log('Final Admin Status:', finalAdminStatus);
+      setIsAdmin(finalAdminStatus);
+    } catch (error) {
+      console.error('Error in admin verification:', error);
+      setIsAdmin(false);
+    }
+  };
 
   const loginWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      toast.success('AUTHENTICATED', { description: 'Welcome to the collective.' });
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      if (error) throw error;
     } catch (error: any) {
       toast.error('AUTH FAILED', { description: error.message });
       throw error;
@@ -82,7 +90,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithEmail = async (email: string, pass: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, pass);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: pass,
+      });
+      if (error) throw error;
       toast.success('ACCESS GRANTED');
     } catch (error: any) {
       toast.error('AUTH FAILED', { description: error.message });
@@ -92,8 +104,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const registerWithEmail = async (email: string, pass: string, name: string) => {
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, pass);
-      await updateProfile(user, { displayName: name });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password: pass,
+        options: {
+          data: {
+            full_name: name,
+          }
+        }
+      });
+      if (error) throw error;
       toast.success('ACCOUNT CREATED', { description: 'Welcome to Finall 11.' });
     } catch (error: any) {
       toast.error('REGISTRATION FAILED', { description: error.message });
@@ -103,7 +123,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       toast.success('TERMINAL EXIT', { description: 'You have been logged out.' });
     } catch (error: any) {
       toast.error('LOGOUT FAILED');
@@ -112,7 +133,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resetPassword = async (email: string) => {
     try {
-      await sendPasswordResetEmail(auth, email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
       toast.success('KEY RESET SENT', { description: 'Check your email for reset instructions.' });
     } catch (error: any) {
       toast.error('RESET FAILED', { description: error.message });

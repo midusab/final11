@@ -17,8 +17,7 @@ import { PRODUCTS, Product, CartItem, Review } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
 import { useAuth } from './contexts/AuthContext';
-import { db, handleFirestoreError, OperationType } from './lib/firebase';
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, arrayUnion, setDoc, addDoc } from 'firebase/firestore';
+import { supabase } from './lib/supabase';
 
 export default function App() {
   const { user, isAdmin, loading: isAuthLoading, logout } = useAuth();
@@ -31,44 +30,56 @@ export default function App() {
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
   const location = useLocation();
 
-  // Firestore Data Listeners
+  // Supabase Data Listeners
   React.useEffect(() => {
-    // Listen to products
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
-    const unsubProducts = onSnapshot(q, (snapshot) => {
-      const pList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
-      
-      if (pList.length === 0 && PRODUCTS.length > 0) {
-        // Seeding logic moved to a check that involves isAdmin
-        if (isAdmin) {
-          PRODUCTS.forEach(async (p) => {
-            const { id, ...rest } = p;
-            try {
-              await setDoc(doc(db, 'products', id), { ...rest, createdAt: new Date() });
-            } catch (e) {
-              console.error("Seeding failed", e);
-            }
-          });
-        }
-      } else {
-        setProducts(pList);
-      }
-      setIsProductsLoading(false);
-    }, (err) => {
-      console.error("Products listener error:", err);
-      setIsProductsLoading(false);
-    });
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    // Listen to config
-    const unsubConfig = onSnapshot(doc(db, 'app_config', 'main'), (doc) => {
-      if (doc.exists()) {
-        setMaintenanceMode(doc.data().maintenanceMode);
+      if (error) {
+        console.error("Error fetching products:", error);
+      } else {
+        if (data.length === 0 && PRODUCTS.length > 0 && isAdmin) {
+           // Seeding logic
+           const seedData = PRODUCTS.map(({ id, ...rest }) => ({ ...rest }));
+           await supabase.from('products').insert(seedData);
+        } else {
+          setProducts(data as Product[]);
+        }
       }
-    });
+      setIsProductsLoading(false);
+    };
+
+    fetchProducts();
+
+    // Real-time subscription
+    const channelName = `products-realtime-${Math.random().toString(36).substring(7)}`;
+    const channel = supabase
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        () => {
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    // App Config Listener (Maintenance Mode)
+    const fetchConfig = async () => {
+      try {
+        const { data } = await supabase.from('app_config').select('*').eq('id', 'main').single();
+        if (data) setMaintenanceMode(data.maintenance_mode);
+      } catch (e) {
+        console.warn('System config fetch failed (Table might be missing):', e);
+      }
+    };
+    fetchConfig();
 
     return () => {
-      unsubProducts();
-      unsubConfig();
+      supabase.removeChannel(channel);
     };
   }, [isAdmin]);
 

@@ -18,14 +18,14 @@ export interface Product {
   material: string;
   reviews: Review[];
   sizes: string[];
-  isUpcoming?: boolean;
-  promoLabel?: string;
-  createdAt?: any;
+  is_upcoming?: boolean;
+  promo_label?: string;
+  created_at?: any;
 }
 
 export interface Inquiry {
   id?: string;
-  userId: string;
+  user_id: string;
   name: string;
   email: string;
   message: string;

@@ -1,6 +1,5 @@
 import React from 'react';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, serverTimestamp, query, orderBy, getDoc, setDoc } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
 import { Product, Inquiry } from '../types';
 import { motion } from 'motion/react';
 import { Plus, Trash2, Tag, Calendar, Mail, MessageSquare, Save, X, AlertCircle } from 'lucide-react';
@@ -59,7 +58,7 @@ export const AdminDashboard: React.FC = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit for Firestore strings
+      if (file.size > 2 * 1024 * 1024) {
         toast.error('FILE TOO LARGE', { description: 'Max size is 2MB' });
         return;
       }
@@ -74,20 +73,24 @@ export const AdminDashboard: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const pSnap = await getDocs(collection(db, 'products'));
-      const pList = pSnap.docs.map(d => ({ ...d.data(), id: d.id } as Product));
-      setProducts(pList);
+      const { data: pList, error: pErr } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (pErr) throw pErr;
+      setProducts(pList as Product[]);
 
-      const iSnap = await getDocs(query(collection(db, 'inquiries'), orderBy('timestamp', 'desc')));
-      const iList = iSnap.docs.map(d => ({ ...d.data(), id: d.id } as Inquiry));
-      setInquiries(iList);
+      const { data: iList, error: iErr } = await supabase
+        .from('inquiries')
+        .select('*')
+        .order('timestamp', { ascending: false });
+      if (iErr) throw iErr;
+      setInquiries(iList as Inquiry[]);
 
-      const cSnap = await getDoc(doc(db, 'app_config', 'main'));
-      if (cSnap.exists()) {
-        setMaintenanceMode(cSnap.data().maintenanceMode);
-      }
-    } catch (error) {
-      handleFirestoreError(error, OperationType.LIST, 'admin_data');
+      const { data: config } = await supabase.from('app_config').select('*').eq('id', 'main').single();
+      if (config) setMaintenanceMode(config.maintenance_mode);
+    } catch (error: any) {
+      toast.error('FETCH FAILED', { description: error.message });
     } finally {
       setLoading(false);
     }
@@ -100,7 +103,7 @@ export const AdminDashboard: React.FC = () => {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProduct.image) {
-      toast.error('MISSING ASSET', { description: 'Please upload or paste an image URL.' });
+      toast.error('MISSING ASSET');
       return;
     }
     if ((newProduct.sizes?.length || 0) === 0) {
@@ -110,17 +113,15 @@ export const AdminDashboard: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, 'products'), {
-        ...newProduct,
-        createdAt: serverTimestamp()
-      });
+      const { error } = await supabase.from('products').insert([newProduct]);
+      if (error) throw error;
       toast.success('PRODUCT ADDED');
       fetchData();
       setNewProduct({
         name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: []
       });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'products');
+    } catch (error: any) {
+      toast.error('CREATE FAILED', { description: error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -129,31 +130,34 @@ export const AdminDashboard: React.FC = () => {
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('EXTERMINATE PRODUCT?')) return;
     try {
-      await deleteDoc(doc(db, 'products', id));
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
       toast.success('PRODUCT REMOVED');
       fetchData();
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `products/${id}`);
+    } catch (error: any) {
+      toast.error('DELETE FAILED', { description: error.message });
     }
   };
 
   const handleUpdatePromo = async (id: string, label: string) => {
     try {
-      await updateDoc(doc(db, 'products', id), { promoLabel: label });
+      const { error } = await supabase.from('products').update({ promo_label: label }).eq('id', id);
+      if (error) throw error;
       toast.success('PROMO UPDATED');
       fetchData();
-    } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `products/${id}`);
+    } catch (error: any) {
+      toast.error('UPDATE FAILED', { description: error.message });
     }
   };
 
   const handleToggleUpcoming = async (id: string, current: boolean) => {
     try {
-      await updateDoc(doc(db, 'products', id), { isUpcoming: !current });
+      const { error } = await supabase.from('products').update({ is_upcoming: !current }).eq('id', id);
+      if (error) throw error;
       toast.success(current ? 'REMOVED FROM UPCOMING' : 'SET AS UPCOMING');
       fetchData();
-    } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `products/${id}`);
+    } catch (error: any) {
+      toast.error('UPDATE FAILED', { description: error.message });
     }
   };
 
@@ -333,14 +337,14 @@ export const AdminDashboard: React.FC = () => {
                       
                       <div className="flex gap-2">
                         <button 
-                          onClick={() => handleToggleUpcoming(p.id, p.isUpcoming || false)}
-                          className={`text-xs px-2 py-1 uppercase font-black tracking-widest border ${p.isUpcoming ? 'bg-brand-red text-white border-brand-red' : 'border-white/10 text-white/20'}`}
+                          onClick={() => handleToggleUpcoming(p.id, p.is_upcoming || false)}
+                          className={`text-xs px-2 py-1 uppercase font-black tracking-widest border ${p.is_upcoming ? 'bg-brand-red text-white border-brand-red' : 'border-white/10 text-white/20'}`}
                         >
                           Upcoming
                         </button>
                         <button 
                           onClick={() => {
-                            const l = prompt('PROMO LABEL:', p.promoLabel || '');
+                            const l = prompt('PROMO LABEL:', p.promo_label || '');
                             if (l !== null) handleUpdatePromo(p.id, l);
                           }}
                           className="text-[8px] px-2 py-1 uppercase font-black tracking-widest border border-white/10 text-white/20 hover:text-white hover:border-white"
@@ -381,12 +385,16 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                   ) : (
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
                         const r = prompt('YOUR RESPONSE:');
                         if (r) {
-                             updateDoc(doc(db, 'inquiries', i.id!), { response: r });
-                             toast.success('RESPONSE TRANSMITTED');
-                             fetchData();
+                             const { error } = await supabase.from('inquiries').update({ response: r }).eq('id', i.id);
+                             if (error) {
+                               toast.error('TRANSMISSION FAILED');
+                             } else {
+                               toast.success('RESPONSE TRANSMITTED');
+                               fetchData();
+                             }
                         }
                       }}
                       className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors"
@@ -414,11 +422,14 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                   <button 
                   onClick={async () => {
-                    const snap = await getDoc(doc(db, 'app_config', 'main'));
-                    const current = snap.exists() ? snap.data().maintenanceMode : false;
-                    await setDoc(doc(db, 'app_config', 'main'), { maintenanceMode: !current }, { merge: true });
-                    setMaintenanceMode(!current);
-                    toast.success(!current ? 'SYSTEM LOCKED' : 'SYSTEM ONLINE');
+                    try {
+                      const { error } = await supabase.from('app_config').update({ maintenance_mode: !maintenanceMode }).eq('id', 'main');
+                      if (error) throw error;
+                      setMaintenanceMode(!maintenanceMode);
+                      toast.success(!maintenanceMode ? 'SYSTEM LOCKED' : 'SYSTEM ONLINE');
+                    } catch (e: any) {
+                      toast.error('PROTOCOL FAILED');
+                    }
                   }}
                   className={`w-16 h-8 relative rounded-full transition-all border ${
                     maintenanceMode ? 'bg-brand-red border-brand-red' : 'bg-dark-border border-white/5'
