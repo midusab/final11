@@ -115,7 +115,7 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Wickliff Miles"
-                        className="w-full bg-dark-surface border border-dark-border py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:border-brand-red transition-colors"
+                        className="w-full bg-dark-surface border border-dark-border py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/30"
                       />
                     </div>
                   </div>
@@ -131,7 +131,7 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="email@example.com"
-                      className="w-full bg-dark-surface border border-dark-border py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:border-brand-red transition-colors"
+                      className="w-full bg-dark-surface border border-dark-border py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/30"
                     />
                   </div>
                 </div>
@@ -157,7 +157,7 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-dark-surface border border-dark-border py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:border-brand-red transition-colors"
+                      className="w-full bg-dark-surface border border-dark-border py-4 pl-12 pr-4 text-xs font-medium focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/30"
                     />
                   </div>
 
