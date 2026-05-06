@@ -231,6 +231,15 @@ export default function App() {
         items={cartItems}
         onUpdateQuantity={(id, q) => setCartItems(prev => prev.map(i => i.id === id ? {...i, quantity: q} : i))}
         onRemove={removeFromCart}
+        isAuthenticated={!!user}
+        onCheckout={() => {
+          if (!user) {
+            setIsSignInOpen(true);
+            toast.error('SIGN IN REQUIRED', { description: 'Please sign in to complete your order.' });
+          } else {
+            toast.success('PROCEEDING TO CHECKOUT', { description: 'Redirecting to payment gateway...' });
+          }
+        }}
       />
 
       <SignIn 
