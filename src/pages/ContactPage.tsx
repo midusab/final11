@@ -125,7 +125,7 @@ export const ContactPage: React.FC = () => {
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5 uppercase tracking-widest"
+                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/30 uppercase tracking-widest"
                 />
               </div>
 
@@ -136,7 +136,7 @@ export const ContactPage: React.FC = () => {
                   placeholder="john@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5 uppercase tracking-widest"
+                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/30 uppercase tracking-widest"
                 />
               </div>
 
@@ -147,7 +147,7 @@ export const ContactPage: React.FC = () => {
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/5 resize-none uppercase tracking-widest"
+                  className="w-full bg-black border border-dark-border p-4 text-xs font-bold focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/30 resize-none uppercase tracking-widest"
                 />
               </div>
 
