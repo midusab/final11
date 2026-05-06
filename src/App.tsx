@@ -39,13 +39,14 @@ export default function App() {
           { data: productData, error: productError },
           { data: configData }
         ] = await Promise.all([
-          supabase.from('products').select('*').order('created_at', { ascending: false }),
+          supabase.from('products').select('id, name, price, category, description, is_upcoming, promo_label').order('created_at', { ascending: false }),
           supabase.from('app_config').select('*').eq('id', 'main').single()
         ]);
 
         if (productError) {
           console.error("Error fetching products:", productError);
         } else if (productData) {
+          console.log('F 11 DEBUG - Products fetched:', productData);
           if (productData.length === 0 && PRODUCTS.length > 0 && isAdmin) {
             const seedData = PRODUCTS.map(({ id, ...rest }) => ({ ...rest }));
             await supabase.from('products').insert(seedData);
@@ -99,11 +100,24 @@ export default function App() {
 
     try {
       const product = products.find(p => p.id === productId);
-      const updatedReviews = [...(product?.reviews || []), newReview];
+      if (!product) return;
+      
+      const updatedReviews = [...(product.reviews || []), newReview];
+      
+      // Optimistic Update
+      setProducts(prev => prev.map(p => p.id === productId ? { ...p, reviews: updatedReviews } : p));
+      // Update selected product if modal is open
+      if (selectedProduct?.id === productId) {
+        setSelectedProduct({ ...selectedProduct, reviews: updatedReviews });
+      }
+
       const { error } = await supabase.from('products').update({ reviews: updatedReviews }).eq('id', productId);
       if (error) throw error;
       toast.success('REVIEW POSTED');
     } catch (error: any) {
+      // Rollback on error
+      const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      if (data) setProducts(data as Product[]);
       toast.error('SUBMISSION FAILED', { description: error.message });
     }
   };

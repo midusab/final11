@@ -60,8 +60,10 @@ export const AdminDashboard: React.FC = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error('FILE TOO LARGE', { description: 'Max size is 2MB' });
+      if (file.size > 1 * 1024 * 1024) {
+        toast.error('ASSET TOO HEAVY', { 
+          description: 'Max size is 1MB. High-res images break system calibration.' 
+        });
         return;
       }
       const reader = new FileReader();
@@ -81,7 +83,7 @@ export const AdminDashboard: React.FC = () => {
         { data: sList, error: sErr },
         { data: config }
       ] = await Promise.all([
-        supabase.from('products').select('*').order('created_at', { ascending: false }),
+        supabase.from('products').select('id, name, price, category, description, material, sizes, details, is_upcoming, promo_label').order('created_at', { ascending: false }),
         supabase.from('inquiries').select('*').order('timestamp', { ascending: false }),
         supabase.from('newsletter_subs').select('*').order('created_at', { ascending: false }),
         supabase.from('app_config').select('*').eq('id', 'main').single()
@@ -159,7 +161,10 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('DELETE PRODUCT?')) return;
+    const productToDelete = products.find(p => p.id === id);
+    if (!productToDelete) return;
+
+    if (!confirm(`ERASE ${productToDelete.name} FROM ARCHIVE?`)) return;
     
     // Optimistic Update
     const previousProducts = [...products];
@@ -168,10 +173,26 @@ export const AdminDashboard: React.FC = () => {
     try {
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
-      toast.success('PRODUCT REMOVED');
+      toast.success('ASSET ERASED', {
+        description: `${productToDelete.name} has been purged from node 11.`,
+        action: {
+          label: 'RESTORE',
+          onClick: async () => {
+            try {
+              const { id, ...rest } = productToDelete;
+              const { error } = await supabase.from('products').insert([rest]);
+              if (error) throw error;
+              toast.success('ASSET RESTORED');
+              fetchData();
+            } catch (err: any) {
+              toast.error('RESTORE FAILED', { description: err.message });
+            }
+          }
+        }
+      });
     } catch (error: any) {
       setProducts(previousProducts); // Rollback
-      toast.error('DELETE FAILED', { description: error.message });
+      toast.error('PURGE FAILED', { description: error.message });
     }
   };
 
@@ -405,7 +426,13 @@ export const AdminDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {products.map(p => (
                   <div key={p.id} className="p-6 bg-dark-surface border border-dark-border group hover:border-white/20 transition-all flex gap-4">
-                    <img src={p.image} className="w-20 h-20 object-cover grayscale brightness-50 group-hover:grayscale-0 transition-all" />
+                    {p.image ? (
+                      <img src={p.image} className="w-20 h-20 object-cover grayscale brightness-50 group-hover:grayscale-0 transition-all" />
+                    ) : (
+                      <div className="w-20 h-20 bg-black border border-dark-border flex items-center justify-center">
+                        <span className="text-[6px] font-black opacity-20 uppercase">NULL_11</span>
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="text-sm font-black uppercase tracking-widest">{p.name}</h4>

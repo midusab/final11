@@ -18,14 +18,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
       className="group relative bg-dark-surface p-4 border border-dark-border hover:border-brand-red/50 transition-all duration-300 shadow-xl cursor-crosshair"
       onClick={() => onViewDetails?.(product)}
     >
-      <div className="aspect-[1/1] overflow-hidden bg-dark-bg border border-dark-border relative transition-colors duration-500">
-        <img 
-          src={product.image} 
-          alt={product.name}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700 group-hover:scale-105"
-        />
+      <div className="aspect-[1/1] overflow-hidden bg-dark-bg border border-dark-border relative transition-colors duration-500 flex items-center justify-center">
+        {product.image ? (
+          <img 
+            src={product.image} 
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-2 opacity-20">
+            <span className="text-[10px] font-black tracking-[0.5em] uppercase">11_NULL</span>
+            <div className="w-12 h-px bg-white/50" />
+            <span className="text-[8px] font-bold uppercase tracking-widest">ASSET_MISSING</span>
+          </div>
+        )}
         
         {/* F 11 Branding Overlay */}
         <div className="absolute inset-0 border-[10px] border-dark-bg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
@@ -78,10 +86,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
 
       <div className="mt-4 flex flex-col">
         <div className="flex items-center gap-1 mb-1">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} size={8} className={i < 4 ? "fill-brand-red text-brand-red" : "text-white/20"} />
-          ))}
-          <span className="text-[8px] text-white/30 font-bold ml-1 uppercase tracking-widest">(4.8)</span>
+          {product.reviews && product.reviews.length > 0 ? (
+            <>
+              {(() => {
+                const avg = product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length;
+                return (
+                  <>
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={8} className={i < Math.round(avg) ? "fill-brand-red text-brand-red" : "text-white/20"} />
+                    ))}
+                    <span className="text-[8px] text-white/30 font-bold ml-1 uppercase tracking-widest">({avg.toFixed(1)})</span>
+                  </>
+                );
+              })()}
+            </>
+          ) : (
+            <>
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={8} className="text-white/10" />
+              ))}
+              <span className="text-[8px] text-white/20 font-bold ml-1 uppercase tracking-widest">NO_REVIEWS</span>
+            </>
+          )}
         </div>
         
         <h3 className="text-xs font-display font-bold tracking-tight text-white uppercase group-hover:text-brand-red transition-colors line-clamp-1">

@@ -83,11 +83,22 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
               <div className="max-w-2xl mx-auto lg:mx-0">
                 <div className="flex items-center gap-2 mb-6">
                   <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className={i < 4 ? "fill-brand-red text-brand-red" : "text-white/10"} />
-                    ))}
+                    {product.reviews && product.reviews.length > 0 ? (
+                      (() => {
+                        const avg = product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length;
+                        return [...Array(5)].map((_, i) => (
+                          <Star key={i} size={14} className={i < Math.round(avg) ? "fill-brand-red text-brand-red" : "text-white/10"} />
+                        ));
+                      })()
+                    ) : (
+                      [...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className="text-white/10" />
+                      ))
+                    )}
                   </div>
-                  <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{product.reviews.length} Customer Reviews</span>
+                  <span className="text-xs font-bold text-white/60 uppercase tracking-widest">
+                    {product.reviews?.length || 0} Member Contributions
+                  </span>
                 </div>
 
                 <p className="text-2xl font-display font-black mb-8">KES {product.price.toLocaleString()}</p>
