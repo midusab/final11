@@ -262,7 +262,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
           <div>
             <h1 className="text-6xl font-display font-black tracking-tighter uppercase leading-none">DASHBOARD <span className="text-brand-red italic">11</span></h1>
-            <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-white/40 mt-4">Auth Level: Administrator // Studio Node 11</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-white/40 mt-4">Store Management</p>
           </div>
           
           <div className="flex gap-4">
@@ -274,7 +274,7 @@ export const AdminDashboard: React.FC = () => {
                   activeTab === tab ? 'bg-brand-red border-brand-red text-white' : 'border-dark-border text-white/20 hover:text-white'
                 }`}
               >
-                {tab}
+                {tab === 'inventory' ? 'Products' : tab === 'inquiries' ? 'Messages' : tab === 'subscribers' ? 'Subscribers' : 'Settings'}
               </button>
             ))}
           </div>
@@ -369,7 +369,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Visual Asset</label>
+                  <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Product Image</label>
                   <div className="flex flex-col gap-4">
                     {newProduct.image && (
                       <div className="w-full aspect-square border border-dark-border overflow-hidden bg-black">
@@ -383,11 +383,11 @@ export const AdminDashboard: React.FC = () => {
                         onChange={handleImageUpload}
                         className="hidden"
                       />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-white">Upload Asset</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-white">Upload Image</span>
                     </label>
                     <input 
                       type="text" 
-                      placeholder="OR PASTE URL..."
+                      placeholder="OR PASTE IMAGE LINK..."
                       value={newProduct.image} 
                       onChange={e => setNewProduct({...newProduct, image: e.target.value})}
                       className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
@@ -404,7 +404,7 @@ export const AdminDashboard: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Vault Status</label>
+                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Status</label>
                     <button
                       type="button"
                       onClick={() => setNewProduct({ ...newProduct, is_upcoming: !newProduct.is_upcoming })}
@@ -412,11 +412,11 @@ export const AdminDashboard: React.FC = () => {
                         newProduct.is_upcoming ? 'bg-brand-red border-brand-red text-white' : 'border-dark-border text-white/40 hover:text-white'
                       }`}
                     >
-                      {newProduct.is_upcoming ? 'LOCKED IN VAULT' : 'IMMEDIATE RELEASE'}
+                      {newProduct.is_upcoming ? 'Upcoming (Coming Soon)' : 'Available Now'}
                     </button>
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Unlock Timestamp (Optional)</label>
+                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Release Date & Time (Optional)</label>
                     <input 
                       type="datetime-local"
                       value={newProduct.release_date || ''}
@@ -436,7 +436,7 @@ export const AdminDashboard: React.FC = () => {
                       : 'bg-brand-red text-white hover:bg-brand-red-hover'
                     }`}
                   >
-                    {isSubmitting ? 'Loading ..... ' : (editingId ? 'Protocol: Update' : 'Initialize Drop')}
+                    {isSubmitting ? 'Loading ..... ' : (editingId ? 'Update Product' : 'Add New Product')}
                   </button>
                   {editingId && (
                     <button 
@@ -449,7 +449,7 @@ export const AdminDashboard: React.FC = () => {
                       }}
                       className="w-full py-2 text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-brand-red transition-all"
                     >
-                      Cancel Modification
+                      Cancel
                     </button>
                   )}
                 </div>
@@ -636,14 +636,14 @@ export const AdminDashboard: React.FC = () => {
         {activeTab === 'system' && (
           <div className="max-w-2xl bg-dark-surface border border-dark-border p-12">
              <h3 className="text-lg font-display font-black uppercase tracking-tight mb-12 flex items-center gap-2">
-                <AlertCircle size={24} className="text-brand-red animate-pulse" /> System Protocols
+                <AlertCircle size={24} className="text-brand-red animate-pulse" /> Settings
               </h3>
               
               <div className="space-y-12">
                 <div className="flex items-center justify-between pb-12 border-b border-white/5">
                   <div>
-                    <h4 className="text-sm font-black uppercase tracking-tight mb-2">Deployment Lockdown</h4>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest">Restrict citizen access during node updates</p>
+                    <h4 className="text-sm font-black uppercase tracking-tight mb-2">Maintenance Mode</h4>
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest">Hide the website from customers while making updates</p>
                   </div>
                   <button 
                   onClick={async () => {
@@ -651,9 +651,9 @@ export const AdminDashboard: React.FC = () => {
                       const { error } = await supabase.from('app_config').update({ maintenance_mode: !maintenanceMode }).eq('id', 'main');
                       if (error) throw error;
                       setMaintenanceMode(!maintenanceMode);
-                      toast.success(!maintenanceMode ? 'SYSTEM LOCKED' : 'SYSTEM ONLINE');
+                      toast.success(!maintenanceMode ? 'Maintenance Mode On' : 'Maintenance Mode Off');
                     } catch (e: any) {
-                      toast.error('PROTOCOL FAILED');
+                      toast.error('Failed to update maintenance mode');
                     }
                   }}
                   className={`w-16 h-8 relative rounded-full transition-all border ${
@@ -670,8 +670,8 @@ export const AdminDashboard: React.FC = () => {
                 <div className="space-y-8">
                   <div className="flex items-center justify-between mb-8">
                     <div>
-                      <h4 className="text-sm font-black uppercase tracking-tight mb-2">Offer Protocol</h4>
-                      <p className="text-[10px] text-white/40 uppercase tracking-widest">Launch site-wide promotional broadcasts</p>
+                      <h4 className="text-sm font-black uppercase tracking-tight mb-2">Special Offers</h4>
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest">Show a promotional banner across the website</p>
                     </div>
                     <button 
                       onClick={async () => {
@@ -679,9 +679,9 @@ export const AdminDashboard: React.FC = () => {
                           const { error } = await supabase.from('app_config').update({ offer_active: !offerConfig.active }).eq('id', 'main');
                           if (error) throw error;
                           setOfferConfig(prev => ({ ...prev, active: !prev.active }));
-                          toast.success(!offerConfig.active ? 'BROADCAST ACTIVE' : 'BROADCAST TERMINATED');
+                          toast.success(!offerConfig.active ? 'Offer is Active' : 'Offer Turned Off');
                         } catch (e: any) {
-                          toast.error('PROTOCOL FAILED');
+                          toast.error('Failed to update offer');
                         }
                       }}
                       className={`w-16 h-8 relative rounded-full transition-all border ${
@@ -714,7 +714,7 @@ export const AdminDashboard: React.FC = () => {
                         onChange={(e) => setOfferConfig(prev => ({ ...prev, product_id: e.target.value }))}
                         className="w-full bg-black border border-white/10 p-4 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none transition-all appearance-none"
                       >
-                        <option value="">-- SELECT PRODUCT FOR POPUP --</option>
+                        <option value="">-- SELECT PRODUCT FOR OFFER --</option>
                         {products.map(p => (
                           <option key={p.id} value={p.id}>{p.name}</option>
                         ))}
@@ -722,7 +722,7 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="text-[9px] font-black uppercase tracking-widest text-white/20 block mb-2">Termination Timestamp</label>
+                      <label className="text-[9px] font-black uppercase tracking-widest text-white/20 block mb-2">End Date & Time</label>
                       <input 
                         type="datetime-local"
                         value={offerConfig.expiry}
@@ -740,14 +740,14 @@ export const AdminDashboard: React.FC = () => {
                             offer_product_id: offerConfig.product_id
                           }).eq('id', 'main');
                           if (error) throw error;
-                          toast.success('PARAMETERS SYNCED');
+                          toast.success('Offer Settings Saved');
                         } catch (e: any) {
-                          toast.error('SYNC FAILED', { description: e.message || 'Database rejected the configuration update.' });
+                          toast.error('Failed to save offer settings', { description: e.message || 'Database rejected the configuration update.' });
                         }
                       }}
                       className="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all"
                     >
-                      Initialize Parameters
+                      Save Offer Settings
                     </button>
                   </div>
                 </div>

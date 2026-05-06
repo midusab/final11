@@ -94,7 +94,7 @@ export const LandingOfferPopup: React.FC<LandingOfferPopupProps> = ({ active, te
           <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative z-10 bg-[#0a0a0a]">
             <div className="flex items-center gap-2 text-[#00FF88] mb-6">
               <Zap size={20} className="fill-[#00FF88] animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-[0.3em]">Exclusive Drop</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em]">Special Offer</span>
             </div>
 
             <h2 className="text-4xl md:text-5xl font-display font-black tracking-tighter uppercase mb-2 leading-none text-white">
@@ -113,7 +113,7 @@ export const LandingOfferPopup: React.FC<LandingOfferPopupProps> = ({ active, te
 
             {timeLeft && (
               <div className="mb-8">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-3">Offer Terminates In</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-3">Offer Ends In</p>
                 <div className="flex gap-2 text-white font-mono font-black text-2xl">
                   <div className="flex flex-col items-center"><span className="bg-white/5 px-3 py-2 border border-white/10">{String(timeLeft.d).padStart(2, '0')}</span><span className="text-[9px] text-white/40 mt-1 uppercase">D</span></div>
                   <span className="py-2 text-[#00FF88]">:</span>
@@ -132,7 +132,7 @@ export const LandingOfferPopup: React.FC<LandingOfferPopupProps> = ({ active, te
               className="w-full bg-white text-black py-5 flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-xs hover:bg-[#00FF88] transition-colors"
             >
               <ShoppingBag size={18} />
-              Secure The Drop
+              Shop Now
             </Link>
           </div>
         </motion.div>

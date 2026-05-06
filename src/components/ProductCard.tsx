@@ -56,9 +56,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
           />
         ) : (
           <div className="flex flex-col items-center gap-2 opacity-20">
-            <span className="text-[10px] font-black tracking-[0.5em] uppercase">11_NULL</span>
+            <span className="text-[10px] font-black tracking-[0.5em] uppercase">No Image</span>
             <div className="w-12 h-px bg-white/50" />
-            <span className="text-[8px] font-bold tracking-widest text-brand-red">ASSET_MISSING</span>
+            <span className="text-[8px] font-bold tracking-widest text-brand-red">Missing Image</span>
           </div>
         )}
         
@@ -66,7 +66,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
         {timeLeft && (
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
             <Timer size={24} className="text-brand-red mb-4 animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4">Unlocks In</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4">Available In</span>
             <div className="flex gap-3 text-white font-mono font-black text-lg">
               <div className="flex flex-col items-center"><span className="bg-white/10 px-2 py-1 border border-white/20">{String(timeLeft.d).padStart(2, '0')}</span><span className="text-[8px] text-white/40 mt-1 uppercase">Days</span></div>
               <span className="py-1">:</span>
