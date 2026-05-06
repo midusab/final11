@@ -141,7 +141,7 @@ export const AdminDashboard: React.FC = () => {
       
       fetchData();
       setNewProduct({
-        name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: []
+        name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: [], is_upcoming: false, release_date: ''
       });
       setEditingId(null);
     } catch (error: any) {
@@ -163,6 +163,7 @@ export const AdminDashboard: React.FC = () => {
       material: product.material,
       sizes: product.sizes,
       is_upcoming: product.is_upcoming,
+      release_date: product.release_date,
       promo_label: product.promo_label
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -399,6 +400,31 @@ export const AdminDashboard: React.FC = () => {
                     className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none min-h-[100px] resize-none"
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Vault Status</label>
+                    <button
+                      type="button"
+                      onClick={() => setNewProduct({ ...newProduct, is_upcoming: !newProduct.is_upcoming })}
+                      className={`w-full py-3 text-[10px] font-black uppercase tracking-widest border transition-all ${
+                        newProduct.is_upcoming ? 'bg-brand-red border-brand-red text-white' : 'border-dark-border text-white/40 hover:text-white'
+                      }`}
+                    >
+                      {newProduct.is_upcoming ? 'LOCKED IN VAULT' : 'IMMEDIATE RELEASE'}
+                    </button>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Unlock Timestamp (Optional)</label>
+                    <input 
+                      type="datetime-local"
+                      value={newProduct.release_date || ''}
+                      onChange={e => setNewProduct({...newProduct, release_date: e.target.value})}
+                      disabled={!newProduct.is_upcoming}
+                      className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none disabled:opacity-30 disabled:cursor-not-allowed"
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-col gap-3">
                   <button 
                     type="submit" 
@@ -417,7 +443,7 @@ export const AdminDashboard: React.FC = () => {
                       onClick={() => {
                         setEditingId(null);
                         setNewProduct({
-                          name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: []
+                          name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: [], is_upcoming: false, release_date: ''
                         });
                       }}
                       className="w-full py-2 text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-brand-red transition-all"
