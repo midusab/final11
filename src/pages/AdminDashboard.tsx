@@ -436,7 +436,7 @@ export const AdminDashboard: React.FC = () => {
                       : 'bg-brand-red text-white hover:bg-brand-red-hover'
                     }`}
                   >
-                    {isSubmitting ? 'Transmitting_Data...' : (editingId ? 'Protocol: Update' : 'Initialize Drop')}
+                    {isSubmitting ? 'Loading ..... ' : (editingId ? 'Protocol: Update' : 'Initialize Drop')}
                   </button>
                   {editingId && (
                     <button 

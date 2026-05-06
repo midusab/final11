@@ -40,7 +40,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ fullScreen = tru
           transition={{ duration: 1, repeat: Infinity }}
           className="text-[8px] font-black uppercase tracking-[0.4em] text-white/30"
         >
-          Transmitting_Data
+          LOADING ..... 
         </motion.p>
       </div>
     </div>

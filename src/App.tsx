@@ -7,6 +7,7 @@ import { Cart } from './components/Cart';
 import { SignIn } from './components/SignIn';
 import { Footer } from './components/Footer';
 import { ProductDetailsModal } from './components/ProductDetailsModal';
+import { LandingOfferPopup } from './components/LandingOfferPopup';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { OfferBanner } from './components/OfferBanner';
 import { PRODUCTS, Product, CartItem, Review } from './types';
@@ -31,8 +32,13 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
   const [isProductsLoading, setIsProductsLoading] = React.useState(true);
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
-  const [offerConfig, setOfferConfig] = React.useState({ active: false, text: '', expiry: '' });
+  const [offerConfig, setOfferConfig] = React.useState({ active: false, text: '', expiry: '', product_id: '' });
+  const [isOfferPopupOpen, setIsOfferPopupOpen] = React.useState(true);
   const location = useLocation();
+
+  const offerProduct = React.useMemo(() => 
+    products.find(p => p.id === offerConfig.product_id), 
+  [products, offerConfig.product_id]);
 
   React.useEffect(() => {
     const loadData = async () => {
@@ -198,6 +204,13 @@ export default function App() {
           <Routes>
             <Route path="/" element={
               <>
+                <LandingOfferPopup 
+                  active={offerConfig.active && isOfferPopupOpen}
+                  text={offerConfig.text}
+                  expiryDate={offerConfig.expiry}
+                  product={offerProduct}
+                  onClose={() => setIsOfferPopupOpen(false)}
+                />
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
