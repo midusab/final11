@@ -19,6 +19,7 @@ export interface Product {
   reviews: Review[];
   sizes: string[];
   is_upcoming?: boolean;
+  release_date?: string;
   promo_label?: string;
   created_at?: any;
 }

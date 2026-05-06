@@ -613,7 +613,7 @@ export const AdminDashboard: React.FC = () => {
               </h3>
               
               <div className="space-y-12">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pb-12 border-b border-white/5">
                   <div>
                     <h4 className="text-sm font-black uppercase tracking-tight mb-2">Deployment Lockdown</h4>
                     <p className="text-[10px] text-white/40 uppercase tracking-widest">Restrict citizen access during node updates</p>
@@ -638,6 +638,76 @@ export const AdminDashboard: React.FC = () => {
                       className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-lg"
                     />
                   </button>
+                </div>
+
+                <div className="space-y-8">
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h4 className="text-sm font-black uppercase tracking-tight mb-2">Offer Protocol</h4>
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest">Launch site-wide promotional broadcasts</p>
+                    </div>
+                    <button 
+                      onClick={async () => {
+                        try {
+                          const { error } = await supabase.from('app_config').update({ offer_active: !offerConfig.active }).eq('id', 'main');
+                          if (error) throw error;
+                          setOfferConfig(prev => ({ ...prev, active: !prev.active }));
+                          toast.success(!offerConfig.active ? 'BROADCAST ACTIVE' : 'BROADCAST TERMINATED');
+                        } catch (e: any) {
+                          toast.error('PROTOCOL FAILED');
+                        }
+                      }}
+                      className={`w-16 h-8 relative rounded-full transition-all border ${
+                        offerConfig.active ? 'bg-brand-red border-brand-red' : 'bg-dark-border border-white/5'
+                      }`}
+                    >
+                      <motion.div 
+                        animate={{ x: offerConfig.active ? 32 : 4 }}
+                        className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-lg"
+                      />
+                    </button>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <label className="text-[9px] font-black uppercase tracking-widest text-white/20 block mb-2">Offer Message</label>
+                      <input 
+                        type="text"
+                        value={offerConfig.text}
+                        onChange={(e) => setOfferConfig(prev => ({ ...prev, text: e.target.value.toUpperCase() }))}
+                        className="w-full bg-black border border-white/10 p-4 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none transition-all"
+                        placeholder="E.G. FLASH DROP: 20% OFF ALL ONYX"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[9px] font-black uppercase tracking-widest text-white/20 block mb-2">Termination Timestamp</label>
+                      <input 
+                        type="datetime-local"
+                        value={offerConfig.expiry}
+                        onChange={(e) => setOfferConfig(prev => ({ ...prev, expiry: e.target.value }))}
+                        className="w-full bg-black border border-white/10 p-4 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none transition-all"
+                      />
+                    </div>
+
+                    <button 
+                      onClick={async () => {
+                        try {
+                          const { error } = await supabase.from('app_config').update({ 
+                            offer_text: offerConfig.text,
+                            offer_expiry: offerConfig.expiry 
+                          }).eq('id', 'main');
+                          if (error) throw error;
+                          toast.success('PARAMETERS SYNCED');
+                        } catch (e: any) {
+                          toast.error('SYNC FAILED');
+                        }
+                      }}
+                      className="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all"
+                    >
+                      Initialize Parameters
+                    </button>
+                  </div>
                 </div>
               </div>
           </div>
