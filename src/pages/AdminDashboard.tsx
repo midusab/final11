@@ -10,7 +10,7 @@ export const AdminDashboard: React.FC = () => {
   const [products, setProducts] = React.useState<Product[]>([]);
   const [inquiries, setInquiries] = React.useState<Inquiry[]>([]);
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
-  const [offerConfig, setOfferConfig] = React.useState({ active: false, text: '', expiry: '' });
+  const [offerConfig, setOfferConfig] = React.useState({ active: false, text: '', expiry: '', product_id: '' });
   const [loading, setLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'subscribers' | 'system'>('inventory');
@@ -102,7 +102,8 @@ export const AdminDashboard: React.FC = () => {
         setOfferConfig({
           active: config.offer_active || false,
           text: config.offer_text || '',
-          expiry: config.offer_expiry || ''
+          expiry: config.offer_expiry || '',
+          product_id: config.offer_product_id || ''
         });
       }
     } catch (error: any) {
@@ -707,6 +708,20 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div>
+                      <label className="text-[9px] font-black uppercase tracking-widest text-white/20 block mb-2">Featured Product</label>
+                      <select 
+                        value={offerConfig.product_id}
+                        onChange={(e) => setOfferConfig(prev => ({ ...prev, product_id: e.target.value }))}
+                        className="w-full bg-black border border-white/10 p-4 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none transition-all appearance-none"
+                      >
+                        <option value="">-- SELECT PRODUCT FOR POPUP --</option>
+                        {products.map(p => (
+                          <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
                       <label className="text-[9px] font-black uppercase tracking-widest text-white/20 block mb-2">Termination Timestamp</label>
                       <input 
                         type="datetime-local"
@@ -721,7 +736,8 @@ export const AdminDashboard: React.FC = () => {
                         try {
                           const { error } = await supabase.from('app_config').update({ 
                             offer_text: offerConfig.text,
-                            offer_expiry: offerConfig.expiry 
+                            offer_expiry: offerConfig.expiry,
+                            offer_product_id: offerConfig.product_id
                           }).eq('id', 'main');
                           if (error) throw error;
                           toast.success('PARAMETERS SYNCED');
