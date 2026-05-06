@@ -1,0 +1,98 @@
+import React from 'react';
+import { motion } from 'motion/react';
+import { Plus, Eye, Star, MessageCircle } from 'lucide-react';
+import { Product } from '../types';
+
+interface ProductCardProps {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+  onViewDetails?: (product: Product) => void;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewDetails }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="group relative bg-dark-surface p-4 border border-dark-border hover:border-brand-red/50 transition-all duration-300 shadow-xl cursor-crosshair"
+      onClick={() => onViewDetails?.(product)}
+    >
+      <div className="aspect-[1/1] overflow-hidden bg-dark-bg border border-dark-border relative transition-colors duration-500">
+        <img 
+          src={product.image} 
+          alt={product.name}
+          className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700 group-hover:scale-105"
+        />
+        
+        {/* F 11 Branding Overlay */}
+        <div className="absolute inset-0 border-[10px] border-dark-bg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
+            className="w-10 h-10 bg-brand-red text-white flex items-center justify-center hover:bg-white hover:text-brand-red transition-all shadow-lg pointer-events-auto"
+            title="Add to Bag"
+          >
+            <Plus size={20} />
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); onViewDetails?.(product); }}
+            className="w-10 h-10 bg-white text-black flex items-center justify-center hover:bg-brand-red hover:text-white transition-all shadow-lg pointer-events-auto"
+            title="Quick View"
+          >
+            <Eye size={20} />
+          </button>
+          <a 
+            href={`https://wa.me/1234567890?text=${encodeURIComponent(`I'm interested in ${product.name}`)}`}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="w-10 h-10 bg-[#25D366] text-white flex items-center justify-center hover:bg-white hover:text-[#25D366] transition-all shadow-lg pointer-events-auto"
+            title="Book via WhatsApp"
+          >
+            <MessageCircle size={20} />
+          </a>
+        </div>
+
+        {/* Jumia-style badges */}
+        <div className="absolute top-0 left-0 flex flex-col gap-1 p-2">
+          <div className="bg-brand-red text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
+            F 11 EXCLUSIVE
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
+            LOW STOCK
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-col">
+        <div className="flex items-center gap-1 mb-1">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} size={8} className={i < 4 ? "fill-brand-red text-brand-red" : "text-white/20"} />
+          ))}
+          <span className="text-[8px] text-white/30 font-bold ml-1 uppercase tracking-widest">(4.8)</span>
+        </div>
+        
+        <h3 className="text-xs font-display font-bold tracking-tight text-white uppercase group-hover:text-brand-red transition-colors line-clamp-1">
+          {product.name}
+        </h3>
+        
+        <div className="mt-2 flex items-baseline gap-2">
+          <p className="text-sm font-display font-black text-white">
+            ${product.price}
+          </p>
+          <p className="text-[10px] text-white/20 line-through font-medium">
+            ${(product.price * 1.25).toFixed(0)}
+          </p>
+        </div>
+        
+        <button 
+          onClick={() => onAddToCart(product)}
+          className="mt-4 w-full border border-white/10 hover:border-brand-red hover:bg-brand-red text-white/60 hover:text-white py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+        >
+          Add to Bag
+        </button>
+      </div>
+    </motion.div>
+  );
+};
