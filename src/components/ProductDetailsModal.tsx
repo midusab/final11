@@ -150,7 +150,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                     Add To Bag
                   </button>
                   <a 
-                    href={`https://wa.me/1234567890?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} (KES ${product.price.toLocaleString()}). Is it available?`)}`}
+                    href={`https://wa.me/254794900546?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} (KES ${product.price.toLocaleString()}). Is it available?`)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="w-full bg-[#25D366] text-white py-5 font-black uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-[#25D366] transition-all flex items-center justify-center gap-3"

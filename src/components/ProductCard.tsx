@@ -53,7 +53,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
             <Eye size={20} />
           </button>
           <a 
-            href={`https://wa.me/1234567890?text=${encodeURIComponent(`I'm interested in ${product.name}`)}`}
+            href={`https://wa.me/254794900546?text=${encodeURIComponent(`I'm interested in ${product.name}`)}`}
             target="_blank"
             rel="noreferrer"
             onClick={(e) => e.stopPropagation()}
