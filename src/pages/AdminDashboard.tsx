@@ -12,7 +12,7 @@ export const AdminDashboard: React.FC = () => {
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'subscribers'>('inventory');
+  const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'subscribers' | 'system'>('inventory');
   const [subscribers, setSubscribers] = React.useState<{id: number, email: string, created_at: string}[]>([]);
 
   // Form states for new product
@@ -257,7 +257,7 @@ export const AdminDashboard: React.FC = () => {
                   <input 
                     type="text" required value={newProduct.material} onChange={e => setNewProduct({...newProduct, material: e.target.value})}
                     placeholder="E.G. 100% ORGANIC COTTON"
-                    className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
+                    className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none placeholder:text-white/40"
                   />
                 </div>
 
@@ -285,7 +285,7 @@ export const AdminDashboard: React.FC = () => {
                     <input 
                       type="text" value={detailInput} onChange={e => setDetailInput(e.target.value)}
                       placeholder="E.G. OVERSIZED FIT"
-                      className="flex-1 bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
+                      className="flex-1 bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none placeholder:text-white/40"
                     />
                     <button type="button" onClick={addDetail} className="bg-dark-border px-4 hover:bg-brand-red transition-colors">
                       <Plus size={16} />
