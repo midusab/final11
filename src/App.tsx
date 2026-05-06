@@ -198,9 +198,9 @@ export default function App() {
                       <div className="absolute inset-0 bg-brand-red/20 blur-[100px] rounded-full scale-75 group-hover:scale-100 transition-transform duration-1000" />
                       <div className="relative z-10 p-2 md:p-8 overflow-hidden aspect-square flex items-center justify-center">
                         <img 
-                          src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=1200"
-                          alt="Alpha Prime"
-                          className="w-full h-full object-contain mix-blend-screen grayscale brightness-125"
+                          src="/finall_11_logo_manifesto_1778100289332.png"
+                          alt="Finall 11 Manifesto"
+                          className="w-full h-full object-contain mix-blend-screen brightness-150 contrast-125"
                         />
                       </div>
                     </div>

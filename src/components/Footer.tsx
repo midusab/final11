@@ -65,16 +65,41 @@ export const Footer: React.FC = () => {
           <div className="lg:text-right">
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-8">Newsletter</h4>
             <p className="text-xs font-bold text-white/60 uppercase tracking-widest mb-6 lg:ml-auto">Sign up for early access to our next drop.</p>
-            <div className="relative group">
+            <form 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const email = (e.currentTarget.elements.namedItem('newsletter_email') as HTMLInputElement).value;
+                if (!email) return;
+                try {
+                  const { error } = await supabase.from('newsletter_subs').insert([{ email }]);
+                  if (error) {
+                    if (error.code === '23505') {
+                      toast.info('ALREADY SUBSCRIBED', { description: 'You are already on the list.' });
+                    } else throw error;
+                  } else {
+                    toast.success('ACCESS GRANTED', { description: 'You will receive early access keys.' });
+                    (e.target as HTMLFormElement).reset();
+                  }
+                } catch (err: any) {
+                  toast.error('PROTOCOL FAILED', { description: err.message });
+                }
+              }}
+              className="relative group"
+            >
               <input 
-                type="text" 
+                name="newsletter_email"
+                type="email" 
+                required
                 placeholder="YOUR@EMAIL.COM"
                 className="w-full bg-dark-surface border-b border-white/10 py-4 text-[10px] font-black uppercase tracking-[0.2em] focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/10"
               />
-              <button className="absolute right-0 bottom-4 text-brand-red opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                type="submit"
+                className="absolute right-0 bottom-4 text-brand-red opacity-0 group-hover:opacity-100 transition-opacity font-black text-[10px] tracking-widest"
+              >
                 JOIN
               </button>
-            </div>
+            </form>
           </div>
         </div>
 
