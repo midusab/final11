@@ -726,7 +726,7 @@ export const AdminDashboard: React.FC = () => {
                           if (error) throw error;
                           toast.success('PARAMETERS SYNCED');
                         } catch (e: any) {
-                          toast.error('SYNC FAILED');
+                          toast.error('SYNC FAILED', { description: e.message || 'Database rejected the configuration update.' });
                         }
                       }}
                       className="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all"

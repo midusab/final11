@@ -58,10 +58,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
           <div className="flex flex-col items-center gap-2 opacity-20">
             <span className="text-[10px] font-black tracking-[0.5em] uppercase">11_NULL</span>
             <div className="w-12 h-px bg-white/50" />
-            <span className="text-[8px] font-bold uppercase tracking-widest">ASSET_MISSING</span>
+            <span className="text-[8px] font-bold tracking-widest text-brand-red">ASSET_MISSING</span>
           </div>
         )}
         
+        {/* Kilimall-style Countdown Overlay */}
+        {timeLeft && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+            <Timer size={24} className="text-brand-red mb-4 animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 mb-4">Unlocks In</span>
+            <div className="flex gap-3 text-white font-mono font-black text-lg">
+              <div className="flex flex-col items-center"><span className="bg-white/10 px-2 py-1 border border-white/20">{String(timeLeft.d).padStart(2, '0')}</span><span className="text-[8px] text-white/40 mt-1 uppercase">Days</span></div>
+              <span className="py-1">:</span>
+              <div className="flex flex-col items-center"><span className="bg-white/10 px-2 py-1 border border-white/20">{String(timeLeft.h).padStart(2, '0')}</span><span className="text-[8px] text-white/40 mt-1 uppercase">Hrs</span></div>
+              <span className="py-1">:</span>
+              <div className="flex flex-col items-center"><span className="bg-white/10 px-2 py-1 border border-white/20">{String(timeLeft.m).padStart(2, '0')}</span><span className="text-[8px] text-white/40 mt-1 uppercase">Min</span></div>
+              <span className="py-1">:</span>
+              <div className="flex flex-col items-center"><span className="bg-brand-red/20 text-brand-red px-2 py-1 border border-brand-red/40">{String(timeLeft.s).padStart(2, '0')}</span><span className="text-[8px] text-white/40 mt-1 uppercase">Sec</span></div>
+            </div>
+          </div>
+        )}
+
         {/* F 11 Branding Overlay */}
         <div className="absolute inset-0 border-[10px] border-dark-bg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
         <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100">
