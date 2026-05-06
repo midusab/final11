@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Plus, Eye, Star, MessageCircle } from 'lucide-react';
+import { Plus, Eye, Star, MessageCircle, Timer } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductCardProps {
@@ -10,6 +10,33 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onViewDetails }) => {
+  const [timeLeft, setTimeLeft] = React.useState<{d: number, h: number, m: number, s: number} | null>(null);
+
+  React.useEffect(() => {
+    if (!product.is_upcoming || !product.release_date) return;
+
+    const timer = setInterval(() => {
+      const target = new Date(product.release_date!).getTime();
+      const now = new Date().getTime();
+      const distance = target - now;
+
+      if (distance < 0) {
+        setTimeLeft(null);
+        clearInterval(timer);
+        return;
+      }
+
+      setTimeLeft({
+        d: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        h: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        m: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        s: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [product.release_date, product.is_upcoming]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
