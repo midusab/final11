@@ -168,23 +168,41 @@ export default function App() {
           <Routes>
             <Route path="/" element={
               <>
-                <Hero />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <Hero />
+                </motion.div>
                 <section id="shop" className="py-24 border-y border-dark-border">
                   <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8"
+                    >
                       <div>
                         <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-brand-red mb-4">Featured Drops</p>
                         <h2 className="text-5xl md:text-7xl font-display font-black tracking-tighter uppercase">THE <span className="italic">ESSENTIALS</span></h2>
                       </div>
-                    </div>
+                    </motion.div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-                      {products.slice(0, 3).map((product) => (
-                        <ProductCard 
-                          key={product.id} 
-                          product={product} 
-                          onAddToCart={addToCart} 
-                          onViewDetails={setSelectedProduct}
-                        />
+                      {products.slice(0, 3).map((product, i) => (
+                        <motion.div
+                          key={product.id}
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1, duration: 0.5 }}
+                        >
+                          <ProductCard 
+                            product={product} 
+                            onAddToCart={addToCart} 
+                            onViewDetails={setSelectedProduct}
+                          />
+                        </motion.div>
                       ))}
                     </div>
                   </div>
