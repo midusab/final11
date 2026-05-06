@@ -33,26 +33,38 @@ export default function App() {
   const location = useLocation();
 
   React.useEffect(() => {
-    const fetchProducts = async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+    const loadData = async () => {
+      try {
+        const [
+          { data: productData, error: productError },
+          { data: configData }
+        ] = await Promise.all([
+          supabase.from('products').select('*').order('created_at', { ascending: false }),
+          supabase.from('app_config').select('*').eq('id', 'main').single()
+        ]);
 
-      if (error) {
-        console.error("Error fetching products:", error);
-      } else {
-        if (data && data.length === 0 && PRODUCTS.length > 0 && isAdmin) {
-           const seedData = PRODUCTS.map(({ id, ...rest }) => ({ ...rest }));
-           await supabase.from('products').insert(seedData);
-        } else if (data) {
-          setProducts(data as Product[]);
+        if (productError) {
+          console.error("Error fetching products:", productError);
+        } else if (productData) {
+          if (productData.length === 0 && PRODUCTS.length > 0 && isAdmin) {
+            const seedData = PRODUCTS.map(({ id, ...rest }) => ({ ...rest }));
+            await supabase.from('products').insert(seedData);
+            const { data: refetched } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+            if (refetched) setProducts(refetched as Product[]);
+          } else {
+            setProducts(productData as Product[]);
+          }
         }
+
+        if (configData) setMaintenanceMode(configData.maintenance_mode);
+      } catch (e) {
+        console.warn('System data fetch failed:', e);
+      } finally {
+        setIsProductsLoading(false);
       }
-      setIsProductsLoading(false);
     };
 
-    fetchProducts();
+    loadData();
 
     const channelName = `products-realtime-${Math.random().toString(36).substring(7)}`;
     const channel = supabase
@@ -60,19 +72,9 @@ export default function App() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'products' },
-        () => fetchProducts()
+        () => loadData()
       )
       .subscribe();
-
-    const fetchConfig = async () => {
-      try {
-        const { data } = await supabase.from('app_config').select('*').eq('id', 'main').single();
-        if (data) setMaintenanceMode(data.maintenance_mode);
-      } catch (e) {
-        console.warn('System config fetch failed:', e);
-      }
-    };
-    fetchConfig();
 
     return () => {
       supabase.removeChannel(channel);

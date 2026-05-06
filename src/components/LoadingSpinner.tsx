@@ -19,12 +19,12 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ fullScreen = tru
           {/* Animated border segments */}
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0 border-t-2 border-brand-red rounded-full"
           />
           <motion.div
             animate={{ rotate: -360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
             className="absolute inset-2 border-b-2 border-white/10 rounded-full"
           />
           
@@ -37,7 +37,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ fullScreen = tru
         {/* Terminal loading text */}
         <motion.p
           animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={{ duration: 1, repeat: Infinity }}
           className="text-[8px] font-black uppercase tracking-[0.4em] text-white/30"
         >
           Transmitting_Data

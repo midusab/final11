@@ -22,6 +22,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
         <img 
           src={product.image} 
           alt={product.name}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700 group-hover:scale-105"
         />
         

@@ -14,6 +14,7 @@ export const AdminDashboard: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'subscribers' | 'system'>('inventory');
   const [subscribers, setSubscribers] = React.useState<{id: number, email: string, created_at: string}[]>([]);
+  const [editingId, setEditingId] = React.useState<string | null>(null);
 
   // Form states for new product
   const [newProduct, setNewProduct] = React.useState<Partial<Product>>({
@@ -74,28 +75,25 @@ export const AdminDashboard: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: pList, error: pErr } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const [
+        { data: pList, error: pErr },
+        { data: iList, error: iErr },
+        { data: sList, error: sErr },
+        { data: config }
+      ] = await Promise.all([
+        supabase.from('products').select('*').order('created_at', { ascending: false }),
+        supabase.from('inquiries').select('*').order('timestamp', { ascending: false }),
+        supabase.from('newsletter_subs').select('*').order('created_at', { ascending: false }),
+        supabase.from('app_config').select('*').eq('id', 'main').single()
+      ]);
+
       if (pErr) throw pErr;
-      setProducts(pList as Product[]);
-
-      const { data: iList, error: iErr } = await supabase
-        .from('inquiries')
-        .select('*')
-        .order('timestamp', { ascending: false });
       if (iErr) throw iErr;
-      setInquiries(iList as Inquiry[]);
-
-      const { data: sList, error: sErr } = await supabase
-        .from('newsletter_subs')
-        .select('*')
-        .order('created_at', { ascending: false });
       if (sErr) throw sErr;
-      setSubscribers(sList || []);
 
-      const { data: config } = await supabase.from('app_config').select('*').eq('id', 'main').single();
+      setProducts(pList as Product[]);
+      setInquiries(iList as Inquiry[]);
+      setSubscribers(sList || []);
       if (config) setMaintenanceMode(config.maintenance_mode);
     } catch (error: any) {
       toast.error('FETCH FAILED', { description: error.message });
@@ -121,28 +119,58 @@ export const AdminDashboard: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('products').insert([newProduct]);
-      if (error) throw error;
-      toast.success('PRODUCT ADDED');
+      if (editingId) {
+        const { error } = await supabase.from('products').update(newProduct).eq('id', editingId);
+        if (error) throw error;
+        toast.success('PRODUCT UPDATED');
+      } else {
+        const { error } = await supabase.from('products').insert([newProduct]);
+        if (error) throw error;
+        toast.success('PRODUCT ADDED');
+      }
+      
       fetchData();
       setNewProduct({
         name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: []
       });
+      setEditingId(null);
     } catch (error: any) {
-      toast.error('CREATE FAILED', { description: error.message });
+      toast.error(editingId ? 'UPDATE FAILED' : 'CREATE FAILED', { description: error.message });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleEditProduct = (product: Product) => {
+    setEditingId(product.id);
+    setNewProduct({
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      image: product.image,
+      description: product.description,
+      details: product.details,
+      material: product.material,
+      sizes: product.sizes,
+      is_upcoming: product.is_upcoming,
+      promo_label: product.promo_label
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('DELETE PRODUCT?')) return;
+    
+    // Optimistic Update
+    const previousProducts = [...products];
+    setProducts(prev => prev.filter(p => p.id !== id));
+
     try {
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
       toast.success('PRODUCT REMOVED');
-      fetchData();
     } catch (error: any) {
+      setProducts(previousProducts); // Rollback
       toast.error('DELETE FAILED', { description: error.message });
     }
   };
@@ -153,13 +181,16 @@ export const AdminDashboard: React.FC = () => {
   const [replyText, setReplyText] = React.useState('');
 
   const handleUpdatePromo = async (id: string, label: string) => {
+    const previousProducts = [...products];
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, promo_label: label } : p));
+    setPromoEditing(null);
+
     try {
       const { error } = await supabase.from('products').update({ promo_label: label }).eq('id', id);
       if (error) throw error;
       toast.success('PROMO UPDATED');
-      setPromoEditing(null);
-      fetchData();
     } catch (error: any) {
+      setProducts(previousProducts);
       toast.error('UPDATE FAILED', { description: error.message });
     }
   };
@@ -179,12 +210,15 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleToggleUpcoming = async (id: string, current: boolean) => {
+    const previousProducts = [...products];
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, is_upcoming: !current } : p));
+
     try {
       const { error } = await supabase.from('products').update({ is_upcoming: !current }).eq('id', id);
       if (error) throw error;
       toast.success(current ? 'REMOVED FROM UPCOMING' : 'SET AS UPCOMING');
-      fetchData();
     } catch (error: any) {
+      setProducts(previousProducts);
       toast.error('UPDATE FAILED', { description: error.message });
     }
   };
@@ -336,17 +370,33 @@ export const AdminDashboard: React.FC = () => {
                     className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none min-h-[100px] resize-none"
                   />
                 </div>
-                <button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className={`w-full py-4 text-[10px] font-black uppercase tracking-widest transition-all ${
-                    isSubmitting 
-                    ? 'bg-brand-red/50 text-white animate-pulse cursor-wait' 
-                    : 'bg-white text-black hover:bg-brand-red hover:text-white'
-                  }`}
-                >
-                  {isSubmitting ? 'Transmitting_Data...' : 'Initialize Drop'}
-                </button>
+                <div className="flex flex-col gap-3">
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className={`w-full py-4 text-[10px] font-black uppercase tracking-widest transition-all ${
+                      isSubmitting 
+                      ? 'bg-brand-red/50 text-white animate-pulse cursor-wait' 
+                      : 'bg-brand-red text-white hover:bg-brand-red-hover'
+                    }`}
+                  >
+                    {isSubmitting ? 'Transmitting_Data...' : (editingId ? 'Protocol: Update' : 'Initialize Drop')}
+                  </button>
+                  {editingId && (
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setEditingId(null);
+                        setNewProduct({
+                          name: '', price: 0, category: 'Hoodies', image: '', description: '', details: [], material: '', sizes: [], reviews: []
+                        });
+                      }}
+                      className="w-full py-2 text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-brand-red transition-all"
+                    >
+                      Cancel Modification
+                    </button>
+                  )}
+                </div>
               </form>
             </div>
 
