@@ -15,7 +15,7 @@ import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabase';
 
 // Lazy Loaded Pages
-const ProductList = lazy(() => import('./pages/ProductList').then(m => ({ default: m.ProductList })));
+const ProductList = lazy(() => import('./pages/ProductsPage').then(m => ({ default: m.ProductsPage })));
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage').then(m => ({ default: m.CollectionsPage })));
 const ContactPage = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
