@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, Search, Menu, X, User } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, User, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -74,8 +74,13 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
                  <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none mb-1">
                    {user.displayName?.split(' ')[0] || 'Member'}
                  </span>
-                 <button onClick={logout} className="text-[8px] font-bold text-white/40 hover:text-brand-red uppercase tracking-widest">
-                   Term_Exit
+                 <button 
+                  onClick={logout} 
+                  title="Logout"
+                  className="text-white/40 hover:text-brand-red transition-all flex items-center gap-1 group"
+                >
+                   <span className="text-[8px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Term_Exit</span>
+                   <LogOut size={12} />
                  </button>
               </div>
               <div className="w-8 h-8 rounded-full border border-dark-border overflow-hidden">
@@ -150,9 +155,9 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
                     logout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="text-left text-4xl font-display font-bold uppercase tracking-tighter text-white/40 hover:text-brand-red transition-colors"
+                  className="text-left text-4xl font-display font-bold uppercase tracking-tighter text-white/40 hover:text-brand-red transition-colors flex items-center gap-4"
                 >
-                  Logout
+                  Logout <LogOut size={32} />
                 </button>
               )}
             </div>
