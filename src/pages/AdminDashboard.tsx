@@ -12,7 +12,8 @@ export const AdminDashboard: React.FC = () => {
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'system'>('inventory');
+  const [activeTab, setActiveTab] = React.useState<'inventory' | 'inquiries' | 'subscribers'>('inventory');
+  const [subscribers, setSubscribers] = React.useState<{id: number, email: string, created_at: string}[]>([]);
 
   // Form states for new product
   const [newProduct, setNewProduct] = React.useState<Partial<Product>>({
@@ -86,6 +87,13 @@ export const AdminDashboard: React.FC = () => {
         .order('timestamp', { ascending: false });
       if (iErr) throw iErr;
       setInquiries(iList as Inquiry[]);
+
+      const { data: sList, error: sErr } = await supabase
+        .from('newsletter_subs')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (sErr) throw sErr;
+      setSubscribers(sList || []);
 
       const { data: config } = await supabase.from('app_config').select('*').eq('id', 'main').single();
       if (config) setMaintenanceMode(config.maintenance_mode);
@@ -188,12 +196,12 @@ export const AdminDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
           <div>
-            <h1 className="text-6xl font-display font-black tracking-tighter uppercase leading-none">COMMAND <span className="text-brand-red italic">CENTER</span></h1>
+            <h1 className="text-6xl font-display font-black tracking-tighter uppercase leading-none">DASHBOARD <span className="text-brand-red italic">11</span></h1>
             <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-white/40 mt-4">Auth Level: Administrator // Studio Node 11</p>
           </div>
           
           <div className="flex gap-4">
-            {(['inventory', 'inquiries', 'system'] as const).map(tab => (
+            {(['inventory', 'inquiries', 'subscribers', 'system'] as const).map(tab => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -480,6 +488,35 @@ export const AdminDashboard: React.FC = () => {
                   )}
                 </div>
               ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'subscribers' && (
+          <div className="max-w-4xl space-y-4">
+            <h3 className="text-lg font-display font-black uppercase tracking-tight mb-8 flex items-center gap-2">
+              <Mail size={20} className="text-brand-red" /> Marketing Collective ({subscribers.length})
+            </h3>
+            
+            {subscribers.length === 0 ? (
+              <div className="p-12 border border-dark-border text-center">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/20">No active subscribers in the archive.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-1">
+                {subscribers.map((s) => (
+                  <div key={s.id} className="flex justify-between items-center p-6 bg-dark-surface border border-dark-border group hover:border-brand-red/30 transition-all">
+                    <div>
+                      <p className="text-sm font-black uppercase tracking-tight text-white mb-1">{s.email}</p>
+                      <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Subscriber Node #{s.id}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{new Date(s.created_at).toLocaleDateString()}</p>
+                      <p className="text-[8px] font-black text-brand-red uppercase tracking-widest mt-1">Status: Active</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}

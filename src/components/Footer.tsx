@@ -1,6 +1,8 @@
 import React from 'react';
 import { Instagram, Twitter, MessageSquare, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 
 export const Footer: React.FC = () => {
   return (
