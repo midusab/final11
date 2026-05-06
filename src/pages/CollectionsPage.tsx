@@ -82,7 +82,3 @@ export const CollectionsPage: React.FC<CollectionsPageProps> = ({ products }) =>
     </div>
   );
 };
-      </div>
-    </div>
-  );
-};
