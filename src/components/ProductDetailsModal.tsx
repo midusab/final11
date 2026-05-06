@@ -7,7 +7,7 @@ interface ProductDetailsModalProps {
   product: Product | null;
   onClose: () => void;
   onAddToCart: (product: Product) => void;
-  onAddReview: (productId: string, rating: number, comment: string) => void;
+  onAddReview: (productId: string, rating: number, comment: string) => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -24,18 +24,20 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
 
   if (!product) return null;
 
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
     
     setIsSubmitting(true);
-    // Mimic processing time
-    setTimeout(() => {
-      onAddReview(product.id, newRating, newComment);
+    try {
+      await onAddReview(product.id, newRating, newComment);
       setNewComment('');
       setNewRating(5);
+    } catch (error) {
+      console.error(error);
+    } finally {
       setIsSubmitting(false);
-    }, 600);
+    }
   };
 
   return (
@@ -88,7 +90,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                   <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{product.reviews.length} Reviews From The Collective</span>
                 </div>
 
-                <p className="text-2xl font-display font-black mb-8">${product.price}.00</p>
+                <p className="text-2xl font-display font-black mb-8">KES {product.price.toLocaleString()}</p>
 
                 <div className="space-y-8 mb-12">
                   <div>
@@ -137,7 +139,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                     Add To Bag
                   </button>
                   <a 
-                    href={`https://wa.me/1234567890?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} ($${product.price}). Is it available?`)}`}
+                    href={`https://wa.me/1234567890?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} (KES ${product.price.toLocaleString()}). Is it available?`)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="w-full bg-[#25D366] text-white py-5 font-black uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-[#25D366] transition-all flex items-center justify-center gap-3"

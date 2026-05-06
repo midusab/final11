@@ -1,6 +1,7 @@
 export interface Review {
   id: string;
   user: string;
+  userId?: string;
   rating: number;
   comment: string;
   date: string;
@@ -17,6 +18,19 @@ export interface Product {
   material: string;
   reviews: Review[];
   sizes: string[];
+  isUpcoming?: boolean;
+  promoLabel?: string;
+  createdAt?: any;
+}
+
+export interface Inquiry {
+  id?: string;
+  userId: string;
+  name: string;
+  email: string;
+  message: string;
+  timestamp: any;
+  response?: string;
 }
 
 export interface CartItem extends Product {
@@ -28,7 +42,7 @@ export const PRODUCTS: Product[] = [
     id: 'h1',
     name: 'F 11 ONYX HOODIE',
     category: 'Hoodies',
-    price: 85,
+    price: 11500,
     image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=800',
     description: 'Ultra-heavy 450gsm fleece. Minimalist F 11 branding on chest.',
     sizes: ['S', 'M', 'L', 'XL'],
@@ -48,7 +62,7 @@ export const PRODUCTS: Product[] = [
     id: 's1',
     name: 'F 11 STEEL PANTS',
     category: 'Bottoms',
-    price: 75,
+    price: 9500,
     image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&q=80&w=800',
     description: 'Relaxed fit with tech-cuff details. Signature 11 embroidery.',
     sizes: ['M', 'L', 'XL'],
@@ -67,7 +81,7 @@ export const PRODUCTS: Product[] = [
     id: 't1',
     name: 'F 11 CORE TEE',
     category: 'T-Shirts',
-    price: 45,
+    price: 4500,
     image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800',
     description: 'Drop shoulder, premium cotton blend. Back F 11 logo.',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
@@ -86,7 +100,7 @@ export const PRODUCTS: Product[] = [
     id: 'm1',
     name: 'F 11 MARVIN BEANIE',
     category: 'Accessories',
-    price: 30,
+    price: 3500,
     image: 'https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?auto=format&fit=crop&q=80&w=800',
     description: 'Deep rib-knit beanie with signature F 11 red tag.',
     sizes: ['ONE SIZE'],
@@ -105,7 +119,7 @@ export const PRODUCTS: Product[] = [
     id: 'h2',
     name: 'F 11 CRIMSON HOOD',
     category: 'Hoodies',
-    price: 95,
+    price: 12500,
     image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800',
     description: 'Limited edition red overdrive wash with 11 insignias.',
     sizes: ['L', 'XL'],
@@ -122,7 +136,7 @@ export const PRODUCTS: Product[] = [
     id: 't2',
     name: 'F 11 ZERO TEE',
     category: 'T-Shirts',
-    price: 40,
+    price: 3900,
     image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80&w=800',
     description: 'Oversized fit with subtle F 11 back embroidery.',
     sizes: ['S', 'M', 'L'],
@@ -141,7 +155,7 @@ export const PRODUCTS: Product[] = [
     id: 'b1',
     name: 'F 11 UTILITY BAG',
     category: 'Accessories',
-    price: 110,
+    price: 14500,
     image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800',
     description: 'Tactical ballistic nylon with modular strap system.',
     sizes: ['ONE SIZE'],
@@ -158,7 +172,7 @@ export const PRODUCTS: Product[] = [
     id: 'c1',
     name: 'F 11 ALPHA CAP',
     category: 'Accessories',
-    price: 45,
+    price: 5500,
     image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=800',
     description: 'Structured 6-panel design with rubberized 11 logo.',
     sizes: ['ONE SIZE'],
@@ -175,7 +189,7 @@ export const PRODUCTS: Product[] = [
     id: 's2',
     name: 'F 11 HEAVY SWEATS',
     category: 'Bottoms',
-    price: 85,
+    price: 11000,
     image: 'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?auto=format&fit=crop&q=80&w=800',
     description: '500gsm oversized sweats with articulation paneling.',
     sizes: ['S', 'M', 'L', 'XL'],
@@ -192,7 +206,7 @@ export const PRODUCTS: Product[] = [
     id: 'g1',
     name: 'F 11 PRO-TECH TANK',
     category: 'T-Shirts',
-    price: 50,
+    price: 6500,
     image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=800',
     description: 'Gym-specific performance tank with heat ventilation.',
     sizes: ['S', 'M', 'L', 'XL'],

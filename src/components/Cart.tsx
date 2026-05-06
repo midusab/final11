@@ -9,9 +9,11 @@ interface CartProps {
   items: CartItem[];
   onUpdateQuantity: (id: string, delta: number) => void;
   onRemove: (id: string) => void;
+  isAuthenticated: boolean;
+  onCheckout: () => void;
 }
 
-export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuantity, onRemove }) => {
+export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuantity, onRemove, isAuthenticated, onCheckout }) => {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
@@ -80,7 +82,7 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
                               className="px-2 py-1 text-white hover:bg-dark-border transition-colors"
                             >+</button>
                           </div>
-                          <p className="text-sm font-bold">${item.price * item.quantity}</p>
+                          <p className="text-sm font-bold">KES {(item.price * item.quantity).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
@@ -93,10 +95,13 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
               <div className="px-8 pt-8 border-t border-dark-border">
                 <div className="flex justify-between items-end mb-6">
                   <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-white/40">Total Amount</p>
-                  <p className="text-3xl font-display font-black tracking-tighter">${total.toFixed(2)}</p>
+                  <p className="text-3xl font-display font-black tracking-tighter">KES {total.toLocaleString()}</p>
                 </div>
-                <button className="w-full bg-white text-black font-black uppercase tracking-widest py-5 text-xs hover:bg-brand-red hover:text-white transition-all">
-                  Proceed to Checkout
+                <button 
+                  onClick={onCheckout}
+                  className="w-full bg-white text-black font-black uppercase tracking-widest py-5 text-xs hover:bg-brand-red hover:text-white transition-all"
+                >
+                  {isAuthenticated ? 'Finalize Order' : 'Auth to Order'}
                 </button>
                 <button 
                   onClick={onClose}

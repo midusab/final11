@@ -4,13 +4,18 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
+import { User as FirebaseUser } from 'firebase/auth';
+
 interface NavbarProps {
   cartCount: number;
   onCartClick: () => void;
   onSignInClick: () => void;
+  user: FirebaseUser | null;
+  isAdmin: boolean;
+  onSignOut: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignInClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignInClick, user, isAdmin, onSignOut }) => {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
@@ -47,6 +52,11 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             <Link to="/collections" className="text-xs uppercase tracking-widest font-medium text-white/60 hover:text-brand-red transition-colors">
               Archive
             </Link>
+            {isAdmin && (
+              <Link to="/admin" className="text-xs uppercase tracking-widest font-black text-brand-red animate-pulse">
+                Admin
+              </Link>
+            )}
           </div>
         </div>
 
@@ -54,13 +64,30 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
           <button className="text-white/60 hover:text-white transition-colors hidden sm:block">
             <Search size={20} />
           </button>
-          <button 
-            onClick={onSignInClick}
-            className="text-white/60 hover:text-brand-red transition-colors flex items-center gap-2"
-          >
-            <User size={20} />
-            <span className="text-[10px] font-bold tracking-widest hidden lg:block uppercase">Account</span>
-          </button>
+          
+          {user ? (
+            <div className="flex items-center gap-4">
+              <div className="hidden lg:flex flex-col items-end">
+                 <span className="text-[10px] font-black uppercase text-white tracking-widest leading-none mb-1">
+                   {user.displayName?.split(' ')[0]}
+                 </span>
+                 <button onClick={onSignOut} className="text-[8px] font-bold text-white/40 hover:text-brand-red uppercase tracking-widest">
+                   Term_Exit
+                 </button>
+              </div>
+              <div className="w-8 h-8 rounded-full border border-dark-border overflow-hidden">
+                 <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}`} alt="User" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          ) : (
+            <button 
+              onClick={onSignInClick}
+              className="text-white/60 hover:text-brand-red transition-colors flex items-center gap-2"
+            >
+              <User size={20} />
+              <span className="text-[10px] font-bold tracking-widest hidden lg:block uppercase">Account</span>
+            </button>
+          )}
           <button 
             className="relative text-white hover:text-brand-red transition-colors"
             onClick={onCartClick}

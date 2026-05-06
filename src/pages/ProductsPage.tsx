@@ -2,7 +2,7 @@ import React from 'react';
 import { ProductCard } from '../components/ProductCard';
 import { PRODUCTS, Product } from '../types';
 import { motion } from 'motion/react';
-import { Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { Filter, SlidersHorizontal, ChevronDown, Search, X } from 'lucide-react';
 
 interface ProductsPageProps {
   products: Product[];
@@ -12,14 +12,17 @@ interface ProductsPageProps {
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCart, onViewDetails }) => {
   const [activeCategory, setActiveCategory] = React.useState('All');
-  const [maxPrice, setMaxPrice] = React.useState(150);
+  const [maxPrice, setMaxPrice] = React.useState(20000);
   const [selectedSizes, setSelectedSizes] = React.useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
   
   const filteredProducts = products.filter(p => {
     const categoryMatch = activeCategory === 'All' || p.category === activeCategory;
     const priceMatch = p.price <= maxPrice;
     const sizeMatch = selectedSizes.length === 0 || p.sizes.some(s => selectedSizes.includes(s));
-    return categoryMatch && priceMatch && sizeMatch;
+    const searchMatch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                       p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return categoryMatch && priceMatch && sizeMatch && searchMatch;
   });
 
   const toggleSize = (size: string) => {
@@ -57,6 +60,30 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
           <aside className="w-full lg:w-64 flex-shrink-0 space-y-10">
             <div>
               <h4 className="text-[10px] uppercase font-black tracking-[0.2em] text-brand-red mb-6 flex items-center gap-2">
+                <Search size={12} />
+                Search Vault
+              </h4>
+              <div className="relative group">
+                <input 
+                  type="text" 
+                  placeholder="ID: HOODIE_01..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-dark-surface border border-dark-border px-4 py-3 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-red transition-colors placeholder:text-white/10"
+                />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-[10px] uppercase font-black tracking-[0.2em] text-brand-red mb-6 flex items-center gap-2">
                 <Filter size={12} />
                 Categories
               </h4>
@@ -86,16 +113,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
                 <input 
                   type="range" 
                   min="0" 
-                  max="150" 
-                  step="5"
+                  max="20000" 
+                  step="500"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(parseInt(e.target.value))}
                   className="w-full accent-brand-red mb-4"
                 />
                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/40 font-mono">
-                  <span>$0</span>
-                  <span className="text-white text-xs">${maxPrice}</span>
-                  <span>$150</span>
+                  <span>KES 0</span>
+                  <span className="text-white text-xs">KES {maxPrice.toLocaleString()}</span>
+                  <span>KES 20K</span>
                 </div>
               </div>
             </div>

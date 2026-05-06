@@ -91,15 +91,6 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose, onGoogleSignIn 
                 AUTHENTICATE
                 <ArrowRight size={16} />
               </button>
-
-              <div className="flex justify-between items-center mt-6">
-                <button className="text-[10px] uppercase font-bold tracking-widest text-white/20 hover:text-white transition-colors">
-                  Reset Password
-                </button>
-                <button className="text-[10px] uppercase font-bold tracking-widest text-white/20 hover:text-brand-red transition-colors">
-                  Create Member ID
-                </button>
-              </div>
             </form>
           </motion.div>
         </>

@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A product for sale in the marketplace",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "image": { "type": "string" },
+        "description": { "type": "string" },
+        "details": { "type": "array", "items": { "type": "string" } },
+        "material": { "type": "string" },
+        "sizes": { "type": "array", "items": { "type": "string" } },
+        "reviews": { "type": "array", "items": { "$ref": "#/entities/Review" } },
+        "isUpcoming": { "type": "boolean" },
+        "promoLabel": { "type": "string" }
+      },
+      "required": ["name", "price", "category", "image"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "User review for a product",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "user": { "type": "string" },
+        "userId": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "date": { "type": "string" }
+      }
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "User message or question",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "response": { "type": "string" }
+      }
+    },
+    "AppConfig": {
+      "title": "App Config",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "maintenanceMode": { "type": "boolean" },
+        "updateMessage": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "products": {
+      "schema": "Product",
+      "description": "Storefront products"
+    },
+    "inquiries": {
+      "schema": "Inquiry",
+      "description": "Customer support messages"
+    },
+    "app_config": {
+      "schema": "AppConfig",
+      "description": "System settings"
+    },
+    "users": {
+        "schema": "object",
+        "description": "User details and roles"
+    }
+  }
+}

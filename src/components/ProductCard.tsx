@@ -56,12 +56,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
 
         {/* Jumia-style badges */}
         <div className="absolute top-0 left-0 flex flex-col gap-1 p-2">
-          <div className="bg-brand-red text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
-            F 11 EXCLUSIVE
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
-            LOW STOCK
-          </div>
+          {product.isUpcoming && (
+            <div className="bg-white text-black text-[8px] font-black px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap animate-pulse">
+              UPCOMING
+            </div>
+          )}
+          {product.promoLabel && (
+            <div className="bg-brand-red text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
+              {product.promoLabel}
+            </div>
+          )}
+          {!product.promoLabel && (
+            <div className="bg-white/10 backdrop-blur-sm text-[8px] font-black text-white px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap">
+              F 11 EXCLUSIVE
+            </div>
+          )}
         </div>
       </div>
 
@@ -79,10 +88,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
         
         <div className="mt-2 flex items-baseline gap-2">
           <p className="text-sm font-display font-black text-white">
-            ${product.price}
+            KES {product.price.toLocaleString()}
           </p>
           <p className="text-[10px] text-white/20 line-through font-medium">
-            ${(product.price * 1.25).toFixed(0)}
+            KES {(product.price * 1.25).toLocaleString()}
           </p>
         </div>
         

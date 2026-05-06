@@ -7,69 +7,144 @@ import { Cart } from './components/Cart';
 import { SignIn } from './components/SignIn';
 import { Footer } from './components/Footer';
 import { ProductDetailsModal } from './components/ProductDetailsModal';
+import { LoadingSpinner } from './components/LoadingSpinner';
 import { ProductsPage } from './pages/ProductsPage';
 import { CollectionsPage } from './pages/CollectionsPage';
+import { ContactPage } from './pages/ContactPage';
+import { AdminDashboard } from './pages/AdminDashboard';
 import { ContactWidgets } from './components/ContactWidgets';
-import { PRODUCTS, Product, CartItem } from './types';
-import { motion } from 'motion/react';
+import { PRODUCTS, Product, CartItem, Review } from './types';
+import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
+import { auth, db, googleProvider, handleFirestoreError, OperationType } from './lib/firebase';
+import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, arrayUnion, setDoc, getDoc, addDoc } from 'firebase/firestore';
 
 export default function App() {
-  const [products, setProducts] = React.useState<Product[]>(PRODUCTS);
+  const [products, setProducts] = React.useState<Product[]>([]);
   const [cartItems, setCartItems] = React.useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isSignInOpen, setIsSignInOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
-  const [user, setUser] = React.useState<{ name: string; email: string } | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [isAppLoading, setIsAppLoading] = React.useState(true);
+  const [maintenanceMode, setMaintenanceMode] = React.useState(false);
   const location = useLocation();
 
+  // Firebase Auth Listener
   React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        // Check if admin doc exists OR if this is the bootstrapped admin email
+        const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
+        const isAuthAdmin = adminDoc.exists() || (currentUser.email === "midusab@gmail.com" && currentUser.emailVerified);
+        setIsAdmin(isAuthAdmin);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
-  const handleReviewSubmit = (productId: string, rating: number, comment: string) => {
+  // Firestore Data Listeners
+  React.useEffect(() => {
+    // Listen to products
+    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+    const unsubProducts = onSnapshot(q, (snapshot) => {
+      const pList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
+      
+      if (pList.length === 0 && PRODUCTS.length > 0) {
+        // Seeding logic moved to a check that involves isAdmin
+        if (isAdmin) {
+          PRODUCTS.forEach(async (p) => {
+            const { id, ...rest } = p;
+            try {
+              await setDoc(doc(db, 'products', id), { ...rest, createdAt: new Date() });
+            } catch (e) {
+              console.error("Seeding failed", e);
+            }
+          });
+        }
+      } else {
+        setProducts(pList);
+      }
+      setIsAppLoading(false);
+    }, (err) => {
+      // Don't throw if it's just a permission error on the list (though products should be public read)
+      console.error("Products listener error:", err);
+      setIsAppLoading(false);
+    });
+
+    // Listen to config
+    const unsubConfig = onSnapshot(doc(db, 'app_config', 'main'), (doc) => {
+      if (doc.exists()) {
+        setMaintenanceMode(doc.data().maintenanceMode);
+      }
+    });
+
+    return () => {
+      unsubProducts();
+      unsubConfig();
+    };
+  }, []);
+
+  const handleReviewSubmit = async (productId: string, rating: number, comment: string) => {
     if (!user) {
       setIsSignInOpen(true);
-      toast.error('AUTH REQUIRED', {
-        description: 'Please sign in to leave a review.',
-        className: 'bg-dark-surface border-dark-border text-white',
-      });
+      toast.error('AUTH REQUIRED');
       return;
     }
 
-    const newReview = {
+    const newReview: Review = {
       id: `r-${Date.now()}`,
-      user: user.name,
+      user: user.displayName || 'Anonymous',
+      userId: user.uid,
       rating,
       comment,
-      date: 'Just now',
+      date: new Date().toLocaleDateString(),
     };
 
-    setProducts(prev => prev.map(p => 
-      p.id === productId 
-        ? { ...p, reviews: [newReview, ...p.reviews] }
-        : p
-    ));
-
-    // Update selected product if it's the one being reviewed
-    if (selectedProduct?.id === productId) {
-      setSelectedProduct(prev => prev ? { ...prev, reviews: [newReview, ...prev.reviews] } : null);
+    try {
+      await updateDoc(doc(db, 'products', productId), {
+        reviews: arrayUnion(newReview)
+      });
+      
+      toast.success('REVIEW SUBMITTED');
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `products/${productId}`);
     }
-
-    toast.success('REVIEW SUBMITTED', {
-      description: 'Your feedback has been added to the collective.',
-      className: 'bg-dark-surface border-dark-border text-white',
-    });
   };
 
-  const handleGoogleSignIn = () => {
-    // Mocking Google Sign-in for UI feedback
-    setUser({ name: 'Wickliff Miles', email: 'wickliff@finall11.com' });
-    setIsSignInOpen(false);
-    toast.success('AUTHENTICATED', {
-      description: 'Welcome to the F 11 Collective, Wickliff.',
-      className: 'bg-dark-surface border-dark-border text-white',
-    });
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      setIsSignInOpen(false);
+      toast.success('AUTHENTICATED');
+    } catch (error) {
+      toast.error('AUTH FAILED');
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    toast.success('SIGNED OUT');
+  };
+
+  const handleCheckout = () => {
+    if (!user) {
+      setIsCartOpen(false);
+      setIsSignInOpen(true);
+      toast.error('AUTH REQUIRED', {
+        description: 'You must be authenticated to place an order.',
+      });
+      return;
+    }
+    
+    // Redirect to WhatsApp with order details
+    const message = `NODE 11 ORDER:\n${cartItems.map(i => `- ${i.name} (${i.quantity})`).join('\n')}\nTotal: KES ${cartItems.reduce((s, i) => s + i.price * i.quantity, 0).toLocaleString()}`;
+    window.open(`https://wa.me/254700000000?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const addToCart = (product: Product) => {
@@ -103,8 +178,29 @@ export default function App() {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
+  if (isAppLoading) return <LoadingSpinner />;
+
   return (
     <div className="min-h-screen bg-dark-bg selection:bg-brand-red selection:text-white">
+      <AnimatePresence>
+        {maintenanceMode && !isAdmin && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[2000] bg-dark-bg flex items-center justify-center p-12 text-center"
+          >
+            <div className="max-w-md">
+              <div className="text-6xl font-display font-black text-brand-red mb-8 animate-pulse">11_LOCKDOWN</div>
+              <h2 className="text-2xl font-black uppercase tracking-tight mb-4 text-white">System Calibration in Progress</h2>
+              <p className="text-white/40 uppercase text-[10px] tracking-widest leading-loose">
+                The node is currently undergoing architectural updates. Access to the matrix is temporary restricted for non-administrators. Retransmitting soon.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Toaster 
         position="top-right" 
         expand={false} 
@@ -125,6 +221,9 @@ export default function App() {
         cartCount={cartItems.reduce((s, i) => s + i.quantity, 0)} 
         onCartClick={() => setIsCartOpen(true)} 
         onSignInClick={() => setIsSignInOpen(true)}
+        user={user}
+        isAdmin={isAdmin}
+        onSignOut={handleSignOut}
       />
       
       <main>
@@ -222,6 +321,8 @@ export default function App() {
           
           <Route path="/products" element={<ProductsPage products={products} onAddToCart={addToCart} onViewDetails={setSelectedProduct} />} />
           <Route path="/collections" element={<CollectionsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <ProductsPage products={products} onAddToCart={addToCart} onViewDetails={setSelectedProduct} />} />
         </Routes>
 
         {/* Newsletter Section - Keep on both */}
@@ -235,20 +336,44 @@ export default function App() {
                 type="email" 
                 placeholder="YOUR EMAIL" 
                 className="flex-1 bg-dark-surface border border-dark-border px-6 py-4 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-red transition-colors"
-                onKeyDown={(e) => {
+                onKeyDown={async (e) => {
                   if (e.key === 'Enter') {
+                    if (user) {
+                        try {
+                            await addDoc(collection(db, 'inquiries'), {
+                                userId: user.uid,
+                                name: user.displayName,
+                                email: user.email,
+                                message: 'Newsletter Subscription Request',
+                                timestamp: new Date().toISOString()
+                            });
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
                     toast.success('ACCESS GRANTED', {
                       description: 'Member Key has been sent to your email.',
-                      className: 'bg-dark-surface border-dark-border text-white',
                     });
                   }
                 }}
               />
               <button 
-                onClick={() => {
+                onClick={async () => {
+                   if (user) {
+                        try {
+                            await addDoc(collection(db, 'inquiries'), {
+                                userId: user.uid,
+                                name: user.displayName,
+                                email: user.email,
+                                message: 'Newsletter Subscription Request',
+                                timestamp: new Date().toISOString()
+                            });
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
                   toast.success('ACCESS GRANTED', {
                     description: 'Member Key has been sent to your email.',
-                    className: 'bg-dark-surface border-dark-border text-white',
                   });
                 }}
                 className="bg-white text-black px-10 py-4 font-black text-xs uppercase tracking-widest hover:bg-brand-red hover:text-white transition-all whitespace-nowrap"
@@ -268,6 +393,8 @@ export default function App() {
         items={cartItems}
         onUpdateQuantity={updateQuantity}
         onRemove={removeFromCart}
+        isAuthenticated={!!user}
+        onCheckout={handleCheckout}
       />
 
       <SignIn 

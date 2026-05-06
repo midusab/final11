@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (request.auth.token.email == "midusab@gmail.com" && request.auth.token.email_verified == true)
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Products Collection
+    match /products/{productId} {
+      allow read: if true;
+      
+      function isValidProduct(data) {
+        return data.name is string && data.name.size() > 0 && data.name.size() <= 100
+            && data.price is number && data.price >= 0
+            && data.category is string
+            && data.image is string && data.image.size() <= 1000
+            && (!data.keys().hasAny(['promoLabel']) || data.promoLabel is string)
+            && (!data.keys().hasAny(['isUpcoming']) || data.isUpcoming is bool);
+      }
+
+      allow create: if isAdmin() && isValidProduct(incoming());
+      allow update: if (isAdmin() || isSignedIn()) && isValidProduct(incoming()) && (
+        isAdmin() || (
+          // Action: Reviewing
+          incoming().diff(existing()).affectedKeys().hasOnly(['reviews']) &&
+          incoming().reviews.size() == existing().reviews.size() + 1
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Inquiries Collection
+    match /inquiries/{inquiryId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['response']);
+      allow delete: if isAdmin();
+    }
+
+    // App Config
+    match /app_config/{configId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admins Collection (Bootstrapped)
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if false; // Only manageable via console or initial setup
+    }
+  }
+}
