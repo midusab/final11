@@ -7,7 +7,7 @@ import { LoadingSpinner } from './components/LoadingSpinner';
 import { OfferBanner } from './components/OfferBanner';
 import { PRODUCTS, Product, CartItem, Review } from './types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Toaster, toast } from 'sonner';
+import { toast } from 'sonner';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabase';
 
@@ -20,6 +20,8 @@ const ProductDetailsModal = lazy(() => import('./components/ProductDetailsModal'
 const LandingOfferPopup = lazy(() => import('./components/LandingOfferPopup').then(m => ({ default: m.LandingOfferPopup })));
 const ContactWidgets = lazy(() => import('./components/ContactWidgets').then(m => ({ default: m.ContactWidgets })));
 const CookieConsent = lazy(() => import('./components/CookieConsent').then(m => ({ default: m.CookieConsent })));
+const Toaster = lazy(() => import('sonner').then(m => ({ default: m.Toaster })));
+import { toast } from 'sonner';
 // Lazy Loaded Pages
 const ProductList = lazy(() => import('./pages/ProductsPage').then(m => ({ default: m.ProductsPage })));
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage').then(m => ({ default: m.CollectionsPage })));
@@ -283,21 +285,23 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-dark-bg selection:bg-brand-red selection:text-white">
-      <Toaster 
-        position="top-right" 
-        richColors 
-        theme="dark"
-        toastOptions={{
-          style: {
-            background: '#0a0a0a',
-            border: '1px solid #1a1a1a',
-            color: '#fff',
-            borderRadius: '0px',
-            fontFamily: 'Inter, sans-serif'
-          },
-          className: 'uppercase tracking-widest text-[10px] font-black'
-        }}
-      />
+      <Suspense fallback={null}>
+        <Toaster 
+          position="top-right" 
+          richColors 
+          theme="dark"
+          toastOptions={{
+            style: {
+              background: '#0a0a0a',
+              border: '1px solid #1a1a1a',
+              color: '#fff',
+              borderRadius: '0px',
+              fontFamily: 'Inter, sans-serif'
+            },
+            className: 'uppercase tracking-widest text-[10px] font-black'
+          }}
+        />
+      </Suspense>
       <OfferBanner 
         active={offerConfig.active} 
         text={offerConfig.text} 
