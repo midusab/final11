@@ -38,7 +38,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
             <h1 className="text-6xl md:text-8xl font-display font-black tracking-tighter uppercase leading-none">
-              BROWSE <span className="text-brand-red italic">ALL</span>
+              11 - <span className="text-brand-red italic">SHOP</span>
             </h1>
             <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-white/40 mt-4">
               Finall 11 Studio // Inventory v1.0
