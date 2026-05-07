@@ -72,7 +72,8 @@ export default function App() {
           setOfferConfig({
             active: configData.offer_active || false,
             text: configData.offer_text || '',
-            expiry: configData.offer_expiry || ''
+            expiry: configData.offer_expiry || '',
+            product_id: configData.offer_product_id || ''
           });
         }
       } catch (e) {
