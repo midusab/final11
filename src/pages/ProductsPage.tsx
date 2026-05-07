@@ -15,6 +15,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
   const [maxPrice, setMaxPrice] = React.useState(20000);
   const [selectedSizes, setSelectedSizes] = React.useState<string[]>([]);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>('asc');
   
   const filteredProducts = products.filter(p => {
     if (p.is_upcoming) return false;
@@ -24,6 +25,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
     const searchMatch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                        p.description.toLowerCase().includes(searchQuery.toLowerCase());
     return categoryMatch && priceMatch && sizeMatch && searchMatch;
+  });
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    return sortOrder === 'asc' ? a.price - b.price : b.price - a.price;
   });
 
   const toggleSize = (size: string) => {
