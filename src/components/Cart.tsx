@@ -7,8 +7,8 @@ interface CartProps {
   isOpen: boolean;
   onClose: () => void;
   items: CartItem[];
-  onUpdateQuantity: (id: string, delta: number) => void;
-  onRemove: (id: string) => void;
+  onUpdateQuantity: (id: string, size: string, quantity: number) => void;
+  onRemove: (id: string, size: string) => void;
   isAuthenticated: boolean;
   onCheckout: () => void;
 }
@@ -63,8 +63,8 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
                         <div className="flex justify-between items-start mb-1">
                           <h4 className="text-sm font-bold uppercase tracking-tight text-white">{item.name}</h4>
                           <button 
-                            onClick={() => onRemove(item.id)}
-                            className="text-white/20 hover:text-brand-red transition-colors"
+                            onClick={() => onRemove(item.id, item.selectedSize || '')}
+                            className="text-white/10 hover:text-brand-red transition-colors p-2"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -75,12 +75,12 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
                         <div className="flex items-center justify-between">
                           <div className="flex items-center border border-dark-border">
                             <button 
-                              onClick={() => onUpdateQuantity(item.id, -1)}
+                              onClick={() => onUpdateQuantity(item.id, item.selectedSize || '', Math.max(1, item.quantity - 1))}
                               className="px-2 py-1 text-white hover:bg-dark-border transition-colors"
                             >-</button>
                             <span className="px-3 py-1 text-xs font-mono">{item.quantity}</span>
                             <button 
-                              onClick={() => onUpdateQuantity(item.id, 1)}
+                              onClick={() => onUpdateQuantity(item.id, item.selectedSize || '', item.quantity + 1)}
                               className="px-2 py-1 text-white hover:bg-dark-border transition-colors"
                             >+</button>
                           </div>
