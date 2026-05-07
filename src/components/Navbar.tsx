@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
               Inquiry
             </Link>
             {isAdmin && (
-              <Link to="/admin" className="text-xs uppercase tracking-widest font-black text-brand-red animate-pulse">
+              <Link to="/admin" className="text-xs uppercase tracking-widest font-black text-brand-red animate-pulse" aria-label="Admin Access">
                 Admin
               </Link>
             )}

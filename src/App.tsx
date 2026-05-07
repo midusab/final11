@@ -90,7 +90,7 @@ export default function App() {
             .select('id, name, category, price, image, sizes, is_upcoming, release_date, promo_label, stock, created_at')
             .order('created_at', { ascending: false })
             .limit(24),
-          supabase.from('app_config').select('*').eq('id', 'main').single()
+          supabase.from('app_config').select('*').eq('id', 'main').maybeSingle()
         ]);
 
         if (productError) {
@@ -163,7 +163,11 @@ export default function App() {
           });
         }
       })
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.warn('Realtime connection failed. Falling back to polling mode.');
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
@@ -268,6 +272,7 @@ export default function App() {
             <Link 
               to="/admin" 
               className="group flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-brand-red transition-all"
+              aria-label="Admin Access"
             >
               <div className="w-2 h-2 rounded-full bg-white/40 group-hover:bg-brand-red animate-pulse" />
               Staff Portal Access

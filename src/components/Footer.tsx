@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
               <a href="https://twitter.com/finall11" target="_blank" rel="noreferrer" className="text-white/60 hover:text-brand-red transition-colors" aria-label="Follow FINALL 11 on Twitter">
                 <Twitter size={18} />
               </a>
-              <a href="https://wa.me/254794900546" target="_blank" rel="noreferrer" className="text-white/60 hover:text-brand-red transition-colors" aria-label="Contact FINALL 11 on WhatsApp">
+              <a href="https://wa.me/254794900546" target="_blank" rel="noreferrer" className="text-white/60 hover:text-brand-red transition-colors" aria-label="Inquire on WhatsApp">
                 <MessageSquare size={18} />
               </a>
             </div>
