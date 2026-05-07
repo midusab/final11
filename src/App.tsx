@@ -10,6 +10,7 @@ import { ProductDetailsModal } from './components/ProductDetailsModal';
 import { LandingOfferPopup } from './components/LandingOfferPopup';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { OfferBanner } from './components/OfferBanner';
+import { ContactWidgets } from './components/ContactWidgets';
 import { PRODUCTS, Product, CartItem, Review } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
@@ -284,6 +285,7 @@ export default function App() {
         </Suspense>
       </main>
 
+      <ContactWidgets />
       <Footer />
 
       <Cart 

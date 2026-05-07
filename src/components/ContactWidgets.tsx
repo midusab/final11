@@ -4,7 +4,7 @@ import { Phone, MessageCircle } from 'lucide-react';
 
 export const ContactWidgets: React.FC = () => {
   return (
-    <div className="fixed bottom-8 right-8 z-[150] flex flex-col gap-4">
+    <div className="fixed bottom-24 right-8 z-[150] flex flex-col gap-4">
       <motion.a
         href="tel:0794900546"
         whileHover={{ scale: 1.1 }}
