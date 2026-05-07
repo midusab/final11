@@ -21,7 +21,6 @@ const LandingOfferPopup = lazy(() => import('./components/LandingOfferPopup').th
 const ContactWidgets = lazy(() => import('./components/ContactWidgets').then(m => ({ default: m.ContactWidgets })));
 const CookieConsent = lazy(() => import('./components/CookieConsent').then(m => ({ default: m.CookieConsent })));
 const Toaster = lazy(() => import('sonner').then(m => ({ default: m.Toaster })));
-import { toast } from 'sonner';
 // Lazy Loaded Pages
 const ProductList = lazy(() => import('./pages/ProductsPage').then(m => ({ default: m.ProductsPage })));
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage').then(m => ({ default: m.CollectionsPage })));
@@ -375,6 +374,8 @@ export default function App() {
                         <img 
                           src="/finall_11_logo_manifesto_1778100289332.png"
                           alt="Finall 11 Manifesto"
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-contain mix-blend-screen brightness-150 contrast-125"
                         />
                       </div>
