@@ -99,7 +99,7 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
                 </div>
                 <button 
                   onClick={onCheckout}
-                  className="w-full bg-white text-black font-black uppercase tracking-widest py-5 text-xs hover:bg-brand-red hover:text-white transition-all"
+                  className="w-full bg-white text-black font-black uppercase tracking-widest py-5 text-xs hover:bg-brand-green hover:text-black transition-all"
                 >
                   {isAuthenticated ? 'Finalize Order' : 'Auth to Order'}
                 </button>
