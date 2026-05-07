@@ -82,3 +82,14 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-brand-red;
 }
+
+/* Custom Toast Styles */
+.toast-success {
+  border: 1px solid #00FF88 !important;
+  color: #00FF88 !important;
+}
+
+.toast-error {
+  border: 1px solid #ff0000 !important;
+  color: #ff0000 !important;
+}
