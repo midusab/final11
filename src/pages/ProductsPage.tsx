@@ -54,9 +54,14 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
             <SlidersHorizontal size={16} className="text-brand-red" />
             <span className="text-[10px] font-black uppercase tracking-widest">Filters</span>
             <div className="h-4 w-px bg-white/10 mx-2" />
-            <div className="flex items-center gap-2 cursor-pointer hover:text-brand-red transition-colors">
-              <span className="text-[10px] font-black uppercase tracking-widest">Price Low-High</span>
-              <ChevronDown size={12} />
+            <div 
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              className="flex items-center gap-2 cursor-pointer hover:text-brand-red transition-colors"
+            >
+              <span className="text-[10px] font-black uppercase tracking-widest">
+                Price {sortOrder === 'asc' ? 'Low-High' : 'High-Low'}
+              </span>
+              <ChevronDown size={12} className={`transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
             </div>
           </div>
         </div>
