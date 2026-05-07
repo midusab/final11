@@ -11,6 +11,7 @@ import { LandingOfferPopup } from './components/LandingOfferPopup';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { OfferBanner } from './components/OfferBanner';
 import { ContactWidgets } from './components/ContactWidgets';
+import { CookieConsent } from './components/CookieConsent';
 import { PRODUCTS, Product, CartItem, Review } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
@@ -285,6 +286,7 @@ export default function App() {
         </Suspense>
       </main>
 
+      <CookieConsent />
       <ContactWidgets />
       <Footer />
 
@@ -295,12 +297,23 @@ export default function App() {
         onUpdateQuantity={(id, q) => setCartItems(prev => prev.map(i => i.id === id ? {...i, quantity: q} : i))}
         onRemove={removeFromCart}
         isAuthenticated={!!user}
-        onCheckout={() => {
+        onCheckout={async () => {
           if (!user) {
             setIsSignInOpen(true);
             toast.error('SIGN IN REQUIRED', { description: 'Please sign in to complete your order.' });
           } else {
-            toast.success('PROCEEDING TO CHECKOUT', { description: 'Redirecting to payment gateway...' });
+            try {
+              for (const item of cartItems) {
+                const currentStock = item.stock || 0;
+                const newStock = Math.max(0, currentStock - item.quantity);
+                await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
+              }
+              setCartItems([]);
+              setIsCartOpen(false);
+              toast.success('ORDER FINALIZED', { description: 'Stock has been deducted successfully.' });
+            } catch (err: any) {
+              toast.error('CHECKOUT FAILED', { description: err.message });
+            }
           }
         }}
       />

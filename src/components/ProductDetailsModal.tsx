@@ -144,10 +144,15 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 <div className="flex flex-col gap-4 mb-16">
                   <button 
                     onClick={() => onAddToCart(product)}
-                    className="w-full bg-brand-red text-white py-5 font-black uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3"
+                    disabled={product.stock === 0}
+                    className={`w-full py-5 font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center justify-center gap-3 ${
+                      product.stock === 0 
+                      ? 'bg-black text-white/20 border border-dark-border cursor-not-allowed' 
+                      : 'bg-brand-red text-white hover:bg-white hover:text-black'
+                    }`}
                   >
                     <ShoppingBag size={18} />
-                    Add To Bag
+                    {product.stock === 0 ? 'SOLD OUT' : 'Add To Bag'}
                   </button>
                   <a 
                     href={`https://wa.me/254794900546?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name} (KES ${product.price.toLocaleString()}). Is it available?`)}`}

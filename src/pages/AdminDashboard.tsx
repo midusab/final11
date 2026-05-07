@@ -311,10 +311,11 @@ export const AdminDashboard: React.FC = () => {
                     <select 
                       value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value})}
                       className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none appearance-none"
-                    >
                       <option>Hoodies</option>
                       <option>T-Shirts</option>
                       <option>Bottoms</option>
+                      <option>Intimates (Men)</option>
+                      <option>Intimates (Women)</option>
                       <option>Accessories</option>
                     </select>
                   </div>

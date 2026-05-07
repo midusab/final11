@@ -89,7 +89,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
                 Categories
               </h4>
               <div className="flex flex-wrap lg:flex-col gap-2">
-                {['All', 'Hoodies', 'T-Shirts', 'Bottoms', 'Accessories'].map((cat) => (
+                {['All', 'Hoodies', 'T-Shirts', 'Bottoms', 'Intimates (Men)', 'Intimates (Women)', 'Accessories'].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
