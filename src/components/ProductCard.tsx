@@ -159,7 +159,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
         </h3>
         
         <div className="mt-2 flex items-baseline gap-2">
-          <p className="text-sm font-display font-black text-white">
+          <p className="text-sm font-display font-black text-brand-green">
             KES {product.price.toLocaleString()}
           </p>
           <p className="text-[10px] text-white/20 line-through font-medium">

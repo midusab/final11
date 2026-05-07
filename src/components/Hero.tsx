@@ -58,7 +58,7 @@ export const Hero: React.FC = () => {
         >
           <Link 
             to="/products"
-            className="bg-brand-red hover:bg-brand-red-hover text-white px-10 py-4 font-bold text-xs uppercase tracking-widest flex items-center gap-3 transition-all group"
+            className="bg-brand-red hover:bg-brand-green hover:text-black text-white px-10 py-4 font-bold text-xs uppercase tracking-widest flex items-center gap-3 transition-all group"
           >
             Shop Collection
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
