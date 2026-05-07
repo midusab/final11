@@ -277,7 +277,7 @@ export default function App() {
             
             <Link 
               to="/admin" 
-              className="group flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-brand-red transition-all"
+              className="group flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-brand-red transition-colors"
               aria-label="Admin Access"
             >
               <div className="w-2 h-2 rounded-full bg-white/40 group-hover:bg-brand-red animate-pulse" />

@@ -181,7 +181,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
         <button 
           onClick={() => onAddToCart(product)}
           disabled={product.stock === 0}
-          className={`mt-4 w-full border py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`mt-4 w-full border py-2 text-[10px] font-black uppercase tracking-widest transition-colors ${
             product.stock === 0 
             ? 'border-dark-border text-white/20 cursor-not-allowed bg-black' 
             : 'border-white/10 hover:border-brand-red hover:bg-brand-red text-white/60 hover:text-white'

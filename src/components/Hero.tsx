@@ -62,7 +62,7 @@ export const Hero: React.FC = () => {
         >
           <Link 
             to="/products"
-            className="bg-brand-red hover:bg-brand-green hover:text-black text-white px-10 py-4 font-bold text-xs uppercase tracking-widest flex items-center gap-3 transition-all group"
+            className="bg-brand-red hover:bg-brand-green hover:text-black text-white px-10 py-4 font-bold text-xs uppercase tracking-widest flex items-center gap-3 transition-colors group"
             aria-label="Shop"
           >
             Shop
@@ -70,7 +70,7 @@ export const Hero: React.FC = () => {
           </Link>
           <Link 
             to="/collections"
-            className="border border-white/20 hover:bg-white hover:text-black text-white px-10 py-4 font-bold text-xs uppercase tracking-widest transition-all text-center"
+            className="border border-white/20 hover:bg-white hover:text-black text-white px-10 py-4 font-bold text-xs uppercase tracking-widest transition-colors text-center"
             aria-label="Archive"
           >
             Archive
