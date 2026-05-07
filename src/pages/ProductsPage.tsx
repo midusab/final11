@@ -25,7 +25,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
     const priceMatch = p.price <= maxPrice;
     const sizeMatch = selectedSizes.length === 0 || p.sizes.some(s => selectedSizes.includes(s));
     const searchMatch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                       p.description.toLowerCase().includes(searchQuery.toLowerCase());
+                       (p.description?.toLowerCase() || '').includes(searchQuery.toLowerCase());
     return categoryMatch && priceMatch && sizeMatch && searchMatch;
   });
 

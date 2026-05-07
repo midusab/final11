@@ -353,7 +353,7 @@ export default function App() {
                           <ProductCard 
                             product={product} 
                             onAddToCart={addToCart} 
-                            onViewDetails={setSelectedProduct}
+                            onViewDetails={handleSelectProduct}
                           />
                         </motion.div>
                       ))}
@@ -385,7 +385,7 @@ export default function App() {
                 </section>
               </>
             } />
-            <Route path="/products" element={<ProductList onAddToCart={addToCart} onViewDetails={setSelectedProduct} products={products} />} />
+            <Route path="/products" element={<ProductList onAddToCart={addToCart} onViewDetails={handleSelectProduct} products={products} />} />
             <Route path="/collections" element={<CollectionsPage products={products} />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
