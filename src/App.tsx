@@ -304,12 +304,12 @@ export default function App() {
             toastOptions={{
               style: {
                 background: '#0a0a0a',
-                border: '1px solid #1a1a1a',
-                color: '#fff',
+                border: '1px solid #00FF88',
+                color: '#00FF88',
                 borderRadius: '0px',
-                fontFamily: 'Inter, sans-serif'
+                fontFamily: 'Space Grotesk, sans-serif'
               },
-              className: 'uppercase tracking-widest text-[10px] font-black'
+              className: 'uppercase tracking-[0.2em] text-[10px] font-black',
             }}
           />
         </Suspense>
