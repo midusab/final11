@@ -84,12 +84,12 @@
 }
 
 /* Custom Toast Styles */
-.toast-success {
+[data-type="success"] {
   border: 1px solid #00FF88 !important;
   color: #00FF88 !important;
 }
 
-.toast-error {
+[data-type="error"] {
   border: 1px solid #ff0000 !important;
   color: #ff0000 !important;
 }

@@ -308,12 +308,6 @@ export default function App() {
                 fontFamily: 'Space Grotesk, sans-serif'
               },
               className: 'uppercase tracking-[0.2em] text-[10px] font-black',
-              success: {
-                className: 'toast-success',
-              },
-              error: {
-                className: 'toast-error',
-              }
             }}
           />
         </Suspense>
