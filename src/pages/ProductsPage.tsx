@@ -149,14 +149,6 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
                 ))}
               </div>
             </div>
-
-            <div className="hidden lg:block bg-brand-red p-6">
-              <h5 className="text-lg font-display font-black uppercase tracking-tight mb-2">Member Drops</h5>
-              <p className="text-[10px] uppercase font-bold leading-relaxed mb-4">Get 11% off your first F 11 original piece.</p>
-              <button className="bg-white text-black w-full py-3 text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">
-                Join Archive
-              </button>
-            </div>
           </aside>
 
           {/* Grid */}
