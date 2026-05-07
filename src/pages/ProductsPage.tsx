@@ -164,7 +164,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
           {/* Grid */}
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
+              {sortedProducts.map((product) => (
                 <ProductCard 
                   key={product.id} 
                   product={product} 
@@ -174,9 +174,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
               ))}
             </div>
             
-            {filteredProducts.length === 0 && (
+            {sortedProducts.length === 0 && (
               <div className="py-24 text-center border border-dashed border-dark-border">
-                <p className="text-[10px] uppercase font-black tracking-[0.3em] text-white/20">No items found in this vault</p>
+                <p className="text-[10px] uppercase font-black tracking-[0.3em] text-white/20">No products match your search</p>
               </div>
             )}
           </div>
