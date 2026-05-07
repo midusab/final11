@@ -65,6 +65,7 @@ export const SignIn: React.FC<SignInProps> = ({ isOpen, onClose }) => {
             <button 
               onClick={onClose}
               className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"
+              aria-label="Close authentication modal"
             >
               <X size={24} />
             </button>

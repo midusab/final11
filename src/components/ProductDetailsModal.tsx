@@ -75,6 +75,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
             <button 
               onClick={onClose}
               className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/40 hover:text-white z-[302] p-2 bg-black/50 backdrop-blur-md rounded-full transition-all"
+              aria-label="Close details modal"
             >
               <X size={20} className="sm:w-6 sm:h-6" />
             </button>
