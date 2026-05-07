@@ -148,6 +148,8 @@ export default function App() {
 
     loadData();
 
+    let pollInterval: number | undefined;
+
     const channelName = `system-realtime-${Math.random().toString(36).substring(7)}`;
     const channel = supabase
       .channel(channelName)
@@ -165,12 +167,16 @@ export default function App() {
       })
       .subscribe((status) => {
         if (status === 'CHANNEL_ERROR') {
-          console.warn('Realtime connection failed. Falling back to polling mode.');
+          console.warn('Realtime blocked by network. Falling back to background polling.');
+          supabase.removeChannel(channel);
+          // Fallback: Check for updates every 60 seconds if realtime is dead
+          pollInterval = window.setInterval(loadData, 60000);
         }
       });
 
     return () => {
       supabase.removeChannel(channel);
+      if (pollInterval) clearInterval(pollInterval);
     };
   }, [isAdmin]);
 
