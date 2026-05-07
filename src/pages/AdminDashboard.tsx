@@ -418,14 +418,30 @@ export const AdminDashboard: React.FC = () => {
                     </button>
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Release Date & Time (Optional)</label>
-                    <input 
-                      type="datetime-local"
-                      value={newProduct.release_date || ''}
-                      onChange={e => setNewProduct({...newProduct, release_date: e.target.value})}
-                      disabled={!newProduct.is_upcoming}
-                      className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none disabled:opacity-30 disabled:cursor-not-allowed"
-                    />
+                    <div className="flex justify-between items-end mb-2">
+                      <label className="text-[10px] font-black uppercase text-white/40">Release Date & Time</label>
+                      {newProduct.release_date && newProduct.is_upcoming && (
+                        <button 
+                          type="button" 
+                          onClick={() => setNewProduct({...newProduct, release_date: ''})}
+                          className="text-[8px] font-black uppercase text-brand-red hover:text-white transition-colors"
+                        >
+                          Clear Time
+                        </button>
+                      )}
+                    </div>
+                    <div className="relative group">
+                      <input 
+                        type="datetime-local"
+                        value={newProduct.release_date || ''}
+                        onChange={e => setNewProduct({...newProduct, release_date: e.target.value})}
+                        disabled={!newProduct.is_upcoming}
+                        className="w-full bg-black border border-dark-border p-4 text-xs font-mono font-bold uppercase tracking-widest focus:border-brand-red outline-none disabled:opacity-20 disabled:cursor-not-allowed transition-all [color-scheme:dark]"
+                      />
+                      {newProduct.is_upcoming && !newProduct.release_date && (
+                        <div className="absolute inset-0 border border-brand-red/50 pointer-events-none animate-pulse" />
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
@@ -724,13 +740,29 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="text-[9px] font-black uppercase tracking-widest text-white/20 block mb-2">End Date & Time</label>
-                      <input 
-                        type="datetime-local"
-                        value={offerConfig.expiry}
-                        onChange={(e) => setOfferConfig(prev => ({ ...prev, expiry: e.target.value }))}
-                        className="w-full bg-black border border-white/10 p-4 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none transition-all"
-                      />
+                      <div className="flex justify-between items-end mb-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-white/20">End Date & Time</label>
+                        {offerConfig.expiry && offerConfig.active && (
+                          <button 
+                            type="button" 
+                            onClick={() => setOfferConfig({...offerConfig, expiry: ''})}
+                            className="text-[8px] font-black uppercase text-brand-red hover:text-white transition-colors"
+                          >
+                            Clear Time
+                          </button>
+                        )}
+                      </div>
+                      <div className="relative group">
+                        <input 
+                          type="datetime-local"
+                          value={offerConfig.expiry}
+                          onChange={(e) => setOfferConfig(prev => ({ ...prev, expiry: e.target.value }))}
+                          className="w-full bg-black border border-white/10 p-4 text-xs font-mono font-bold uppercase tracking-widest focus:border-brand-red outline-none transition-all [color-scheme:dark]"
+                        />
+                        {offerConfig.active && !offerConfig.expiry && (
+                          <div className="absolute inset-0 border border-brand-red/50 pointer-events-none animate-pulse" />
+                        )}
+                      </div>
                     </div>
 
                     <button 
