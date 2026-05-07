@@ -17,6 +17,8 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ products, onAddToCar
   const [searchQuery, setSearchQuery] = React.useState('');
   const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>('asc');
   
+  React.useEffect(() => { document.title = 'Shop — FINALL 11'; }, []);
+  
   const filteredProducts = products.filter(p => {
     if (p.is_upcoming) return false;
     const categoryMatch = activeCategory === 'All' || p.category === activeCategory;
