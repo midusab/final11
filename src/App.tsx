@@ -254,13 +254,13 @@ export default function App() {
         <div className="absolute inset-0 bg-gradient-to-t from-brand-red/10 to-transparent pointer-events-none" />
         
         <div className="max-w-xl relative z-10">
-          <motion.div 
+          <m.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="inline-block px-4 py-1 border border-brand-red/30 bg-brand-red/5 mb-12"
           >
             <p className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-red animate-pulse">System Lockdown</p>
-          </motion.div>
+          </m.div>
           
           <h1 className="text-7xl md:text-9xl font-display font-black text-white mb-8 tracking-tighter uppercase leading-[0.8]">
             11<span className="text-brand-red italic">_</span>OFFLINE
@@ -293,24 +293,6 @@ export default function App() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-dark-bg selection:bg-brand-red selection:text-white">
-      <Suspense fallback={null}>
-        <Toaster 
-          position="top-right" 
-          richColors 
-          theme="dark"
-          toastOptions={{
-            style: {
-              background: '#0a0a0a',
-              border: '1px solid #1a1a1a',
-              color: '#fff',
-              borderRadius: '0px',
-              fontFamily: 'Inter, sans-serif'
-            },
-            className: 'uppercase tracking-widest text-[10px] font-black'
-          }}
-        />
   return (
     <LazyMotion features={domAnimation}>
       <div className="min-h-screen bg-black text-white selection:bg-brand-red selection:text-white overflow-x-hidden">
