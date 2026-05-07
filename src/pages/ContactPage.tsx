@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 export const ContactPage: React.FC = () => {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  React.useEffect(() => { document.title = 'Inquiry — FINALL 11'; }, []);
   const [myInquiries, setMyInquiries] = React.useState<Inquiry[]>([]);
   const [formData, setFormData] = React.useState({
     name: '',
