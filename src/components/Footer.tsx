@@ -18,11 +18,15 @@ export const Footer: React.FC = () => {
               Founded by <span className="text-brand-red">Wickliff Miles</span>.
             </p>
             <div className="flex items-center gap-6">
-              {[Instagram, Twitter, MessageSquare].map((Icon, i) => (
-                <a key={i} href="#" className="text-white/20 hover:text-brand-red transition-colors">
-                  <Icon size={18} />
-                </a>
-              ))}
+              <a href="https://instagram.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors">
+                <Instagram size={18} />
+              </a>
+              <a href="https://twitter.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors">
+                <Twitter size={18} />
+              </a>
+              <a href="https://wa.me/254794900546" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors">
+                <MessageSquare size={18} />
+              </a>
             </div>
           </div>
 
@@ -49,6 +53,16 @@ export const Footer: React.FC = () => {
                   Support
                 </Link>
               </li>
+              <li>
+                <Link to="/privacy" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                  Privacy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                  Terms
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -65,14 +79,14 @@ export const Footer: React.FC = () => {
                     const { error } = await supabase.from('newsletter_subs').insert([{ email }]);
                     if (error) {
                       if (error.code === '23505') {
-                        toast.info('ALREADY SUBSCRIBED', { description: 'You are already on the list.' });
+                        toast.info('Already subscribed', { description: 'You are already on our list.' });
                       } else throw error;
                     } else {
-                      toast.success('ACCESS GRANTED', { description: 'You will receive early access keys.' });
+                      toast.success('Subscribed!', { description: 'You will receive early access notifications.' });
                       (e.target as HTMLFormElement).reset();
                     }
                   } catch (err: any) {
-                    toast.error('PROTOCOL FAILED', { description: err.message });
+                    toast.error('Subscription failed', { description: err.message });
                   }
                 }}
                 className="flex flex-col sm:flex-row gap-2"

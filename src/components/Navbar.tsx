@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShoppingBag, Search, Menu, X, User, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,6 +15,10 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
   const { user, isAdmin, logout } = useAuth();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isActive = (path: string) => location.pathname === path;
 
   React.useEffect(() => {
     if (user) {
@@ -49,13 +53,13 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
-            <Link to="/products" className="text-xs uppercase tracking-widest font-medium text-white/60 hover:text-brand-red transition-colors">
+            <Link to="/products" className={`text-xs uppercase tracking-widest font-medium transition-colors hover:text-white ${isActive('/products') ? 'text-white border-b border-white pb-0.5' : 'text-white/60'}`}>
               Shop
             </Link>
-            <Link to="/collections" className="text-xs uppercase tracking-widest font-medium text-white/60 hover:text-brand-red transition-colors">
+            <Link to="/collections" className={`text-xs uppercase tracking-widest font-medium transition-colors hover:text-white ${isActive('/collections') ? 'text-white border-b border-white pb-0.5' : 'text-white/60'}`}>
               Archive
             </Link>
-            <Link to="/contact" className="text-xs uppercase tracking-widest font-medium text-white/60 hover:text-brand-red transition-colors">
+            <Link to="/contact" className={`text-xs uppercase tracking-widest font-medium transition-colors hover:text-white ${isActive('/contact') ? 'text-white border-b border-white pb-0.5' : 'text-white/60'}`}>
               Inquiry
             </Link>
             {isAdmin && (
@@ -67,7 +71,11 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="text-white/60 hover:text-white transition-colors hidden sm:block">
+          <button 
+            className="text-white/60 hover:text-white transition-colors hidden sm:block"
+            onClick={() => navigate('/products')}
+            title="Search products"
+          >
             <Search size={20} />
           </button>
           

@@ -24,11 +24,18 @@ const CollectionsPage = lazy(() => import('./pages/CollectionsPage').then(m => (
 const ContactPage = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
 
 export default function App() {
   const { user, isAdmin, loading: isAuthLoading } = useAuth();
   const [products, setProducts] = React.useState<Product[]>([]);
-  const [cartItems, setCartItems] = React.useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = React.useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('f11_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isSignInOpen, setIsSignInOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
@@ -140,15 +147,21 @@ export default function App() {
     }
   };
 
-  const addToCart = (product: Product) => {
+  // Persist cart to localStorage whenever it changes
+  React.useEffect(() => {
+    localStorage.setItem('f11_cart', JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const addToCart = (product: Product, selectedSize: string = '') => {
+    const cartKey = `${product.id}-${selectedSize}`;
     setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
+      const existing = prev.find((item) => `${item.id}-${item.selectedSize}` === cartKey);
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          `${item.id}-${item.selectedSize}` === cartKey ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: 1, selectedSize }];
     });
     setIsCartOpen(true);
     toast.success('ADDED TO BAG', { description: product.name });
@@ -281,6 +294,8 @@ export default function App() {
             <Route path="/products" element={<ProductList onAddToCart={addToCart} onViewDetails={setSelectedProduct} products={products} />} />
             <Route path="/collections" element={<CollectionsPage products={products} />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
@@ -304,14 +319,20 @@ export default function App() {
             toast.error('SIGN IN REQUIRED', { description: 'Please sign in to complete your order.' });
           } else {
             try {
+              // Deduct stock
               for (const item of cartItems) {
                 const currentStock = item.stock || 0;
                 const newStock = Math.max(0, currentStock - item.quantity);
                 await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
               }
+              // Build WhatsApp order message
+              const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+              const lines = cartItems.map(i => `• ${i.name} (Size: ${i.selectedSize || 'N/A'}) x${i.quantity} — KES ${(i.price * i.quantity).toLocaleString()}`).join('%0A');
+              const msg = `Hello FINALL 11!%0A%0AI'd like to place an order:%0A%0A${lines}%0A%0A*TOTAL: KES ${total.toLocaleString()}*%0A%0AName: ${user.user_metadata?.full_name || ''}%0AEmail: ${user.email}`;
               setCartItems([]);
               setIsCartOpen(false);
-              toast.success('ORDER FINALIZED', { description: 'Stock has been deducted successfully.' });
+              window.open(`https://wa.me/254794900546?text=${msg}`, '_blank');
+              toast.success('ORDER SENT TO WHATSAPP', { description: 'Complete your order in the chat.' });
             } catch (err: any) {
               toast.error('CHECKOUT FAILED', { description: err.message });
             }
@@ -326,10 +347,12 @@ export default function App() {
 
       <ProductDetailsModal 
         product={selectedProduct}
+        allProducts={products}
         onClose={() => setSelectedProduct(null)}
         onAddToCart={addToCart}
         onAddReview={handleReviewSubmit}
         isAuthenticated={!!user}
+        onViewDetails={setSelectedProduct}
       />
     </div>
   );

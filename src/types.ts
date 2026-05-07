@@ -37,6 +37,7 @@ export interface Inquiry {
 
 export interface CartItem extends Product {
   quantity: number;
+  selectedSize: string;
 }
 
 export const PRODUCTS: Product[] = [

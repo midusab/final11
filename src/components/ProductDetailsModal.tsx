@@ -1,26 +1,40 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Star, ShoppingBag, Truck, RotateCcw, ShieldCheck } from 'lucide-react';
+import { X, Star, ShoppingBag, Truck, RotateCcw, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductDetailsModalProps {
   product: Product | null;
+  allProducts: Product[];
   onClose: () => void;
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: Product, size: string) => void;
   onAddReview: (productId: string, rating: number, comment: string) => Promise<void>;
   isAuthenticated: boolean;
+  onViewDetails: (product: Product) => void;
 }
 
 export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({ 
   product, 
+  allProducts,
   onClose, 
   onAddToCart,
   onAddReview,
-  isAuthenticated
+  isAuthenticated,
+  onViewDetails
 }) => {
   const [newRating, setNewRating] = React.useState(5);
   const [newComment, setNewComment] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [selectedSize, setSelectedSize] = React.useState<string>('');
+  const [sizeError, setSizeError] = React.useState(false);
+
+  // Reset size when product changes
+  React.useEffect(() => {
+    if (product) {
+      setSelectedSize(product.sizes?.[0] || '');
+      setSizeError(false);
+    }
+  }, [product?.id]);
 
   if (!product) return null;
 
@@ -142,8 +156,40 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 </div>
 
                 <div className="flex flex-col gap-4 mb-16">
+                  {/* Size Picker */}
+                  {product.sizes && product.sizes.length > 0 && (
+                    <div className="mb-8">
+                      <div className="flex justify-between items-center mb-3">
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Size</h4>
+                        {sizeError && <span className="text-[10px] font-black text-brand-red uppercase tracking-widest animate-pulse">Please select a size</span>}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {product.sizes.map(size => (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => { setSelectedSize(size); setSizeError(false); }}
+                            className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest border transition-all ${
+                              selectedSize === size
+                              ? 'bg-white text-black border-white'
+                              : 'border-dark-border text-white/40 hover:border-white/40'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <button 
-                    onClick={() => onAddToCart(product)}
+                    onClick={() => {
+                      if (!selectedSize && product.sizes && product.sizes.length > 0) {
+                        setSizeError(true);
+                        return;
+                      }
+                      onAddToCart(product, selectedSize);
+                    }}
                     disabled={product.stock === 0}
                     className={`w-full py-5 font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center justify-center gap-3 ${
                       product.stock === 0 
@@ -250,6 +296,34 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                     <p className="text-xs text-white/20 uppercase tracking-widest font-black italic">Be the first to leave feedback for this drop.</p>
                   )}
                 </div>
+
+                {/* Related Products */}
+                {(() => {
+                  const related = allProducts.filter(p => p.id !== product.id && p.category === product.category && !p.is_upcoming).slice(0, 4);
+                  if (related.length === 0) return null;
+                  return (
+                    <div className="border-t border-dark-border pt-12 mt-4">
+                      <h4 className="text-sm font-display font-black uppercase tracking-widest mb-6">You May Also Like</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        {related.map(p => (
+                          <button
+                            key={p.id}
+                            onClick={() => { onViewDetails(p); }}
+                            className="group text-left border border-dark-border hover:border-white/20 transition-all overflow-hidden"
+                          >
+                            <div className="aspect-square overflow-hidden bg-dark-surface">
+                              <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-700" />
+                            </div>
+                            <div className="p-3">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-white line-clamp-1">{p.name}</p>
+                              <p className="text-[10px] font-bold text-brand-green mt-1">KES {p.price.toLocaleString()}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </motion.div>

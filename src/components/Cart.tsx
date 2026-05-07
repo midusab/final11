@@ -69,7 +69,9 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
                             <Trash2 size={14} />
                           </button>
                         </div>
-                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mb-4">Size: M</p>
+                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mb-4">
+                          Size: {item.selectedSize || 'One Size'}
+                        </p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center border border-dark-border">
                             <button 
