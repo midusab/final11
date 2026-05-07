@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Plus, Eye, Star, MessageCircle, Timer } from 'lucide-react';
 import { Product } from '../types';
+import { getOptimizedImageUrl, getProductSrcSet } from '../lib/imageOptimization';
 
 interface ProductCardProps {
   product: Product;
@@ -48,7 +49,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
       <div className="aspect-[1/1] overflow-hidden bg-dark-bg border border-dark-border relative transition-colors duration-500 flex items-center justify-center">
         {product.image ? (
           <img 
-            src={product.image} 
+            src={getOptimizedImageUrl(product.image, 600)} 
+            srcSet={getProductSrcSet(product.image)}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             alt={product.name}
             loading="lazy"
             decoding="async"

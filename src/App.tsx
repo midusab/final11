@@ -40,6 +40,7 @@ export default function App() {
   });
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isSignInOpen, setIsSignInOpen] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
   const handleSelectProduct = async (product: Product) => {
     // If we already have full details, just open modal
     if (product.description && product.details) {
@@ -97,11 +98,10 @@ export default function App() {
           // Sanitise: filter out any product where JSON fields are corrupted
           const safeProducts = productData.filter(p => {
             try {
-              // If reviews is a string (returned as raw JSON), parse it to validate
-              if (typeof p.reviews === 'string') JSON.parse(p.reviews);
-              return true;
+              // Basic validation since we are doing a light fetch
+              return !!p.id && !!p.name;
             } catch {
-              console.warn('Skipping product with corrupted data:', p.id, p.name);
+              console.warn('Skipping product with missing essential data:', (p as any).id);
               return false;
             }
           });
