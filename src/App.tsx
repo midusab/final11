@@ -56,21 +56,35 @@ export default function App() {
           { data: productData, error: productError },
           { data: configData }
         ] = await Promise.all([
-          supabase.from('products').select('*').order('created_at', { ascending: false }),
+          supabase.from('products')
+            .select('id, name, category, price, image, description, details, material, sizes, is_upcoming, release_date, promo_label, stock, created_at, reviews')
+            .order('created_at', { ascending: false }),
           supabase.from('app_config').select('*').eq('id', 'main').single()
         ]);
 
         if (productError) {
           console.error("Error fetching products:", productError);
         } else if (productData) {
-          console.log('F 11 DEBUG - Products fetched:', productData);
+          // Sanitise: filter out any product where JSON fields are corrupted
+          const safeProducts = productData.filter(p => {
+            try {
+              // If reviews is a string (returned as raw JSON), parse it to validate
+              if (typeof p.reviews === 'string') JSON.parse(p.reviews);
+              return true;
+            } catch {
+              console.warn('Skipping product with corrupted data:', p.id, p.name);
+              return false;
+            }
+          });
           if (productData.length === 0 && PRODUCTS.length > 0 && isAdmin) {
             const seedData = PRODUCTS.map(({ id, ...rest }) => ({ ...rest }));
             await supabase.from('products').insert(seedData);
-            const { data: refetched } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+            const { data: refetched } = await supabase.from('products')
+              .select('id, name, category, price, image, description, details, material, sizes, is_upcoming, release_date, promo_label, stock, created_at, reviews')
+              .order('created_at', { ascending: false });
             if (refetched) setProducts(refetched as Product[]);
           } else {
-            setProducts(productData as Product[]);
+            setProducts(safeProducts as Product[]);
           }
         }
 
