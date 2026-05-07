@@ -298,7 +298,7 @@ export const AdminDashboard: React.FC = () => {
                     className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Price (KES)</label>
                     <input 
@@ -317,6 +317,13 @@ export const AdminDashboard: React.FC = () => {
                       <option>Bottoms</option>
                       <option>Accessories</option>
                     </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase text-white/40 block mb-2">Stock</label>
+                    <input 
+                      type="number" min="0" required value={newProduct.stock || 0} onChange={e => setNewProduct({...newProduct, stock: parseInt(e.target.value) || 0})}
+                      className="w-full bg-black border border-dark-border p-3 text-xs font-bold uppercase tracking-widest focus:border-brand-red outline-none"
+                    />
                   </div>
                 </div>
 
