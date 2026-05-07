@@ -40,7 +40,33 @@ export default function App() {
   });
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isSignInOpen, setIsSignInOpen] = React.useState(false);
-  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
+  const handleSelectProduct = async (product: Product) => {
+    // If we already have full details, just open modal
+    if (product.description && product.details) {
+      setSelectedProduct(product);
+      return;
+    }
+
+    // Set preview while loading full details
+    setSelectedProduct(product);
+
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', product.id)
+        .single();
+      
+      if (error) throw error;
+      if (data) {
+        setSelectedProduct(data as Product);
+        // Also update the product in the main list so we don't fetch again
+        setProducts(prev => prev.map(p => p.id === data.id ? { ...p, ...data } : p));
+      }
+    } catch (err: any) {
+      console.warn('Failed to fetch product details:', err);
+    }
+  };
   const [isProductsLoading, setIsProductsLoading] = React.useState(true);
   const [maintenanceMode, setMaintenanceMode] = React.useState(false);
   const [offerConfig, setOfferConfig] = React.useState({ active: false, text: '', expiry: '', product_id: '' });
@@ -59,8 +85,9 @@ export default function App() {
           { data: configData }
         ] = await Promise.all([
           supabase.from('products')
-            .select('id, name, category, price, image, description, details, material, sizes, is_upcoming, release_date, promo_label, stock, created_at, reviews')
-            .order('created_at', { ascending: false }),
+            .select('id, name, category, price, image, sizes, is_upcoming, release_date, promo_label, stock, created_at')
+            .order('created_at', { ascending: false })
+            .limit(24),
           supabase.from('app_config').select('*').eq('id', 'main').single()
         ]);
 

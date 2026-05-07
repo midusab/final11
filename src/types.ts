@@ -13,10 +13,10 @@ export interface Product {
   category: string;
   price: number;
   image: string;
-  description: string;
-  details: string[];
-  material: string;
-  reviews: Review[];
+  description?: string;
+  details?: string[];
+  material?: string;
+  reviews?: Review[];
   sizes: string[];
   is_upcoming?: boolean;
   release_date?: string;
