@@ -61,6 +61,7 @@ export const CookieConsent: React.FC = () => {
             <button 
               onClick={() => setIsVisible(false)}
               className="absolute top-2 right-2 text-white/20 hover:text-brand-red md:hidden"
+              aria-label="Close cookie banner"
             >
               <X size={16} />
             </button>

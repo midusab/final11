@@ -104,6 +104,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             <button 
               onClick={onSignInClick}
               className="text-white/60 hover:text-brand-red transition-colors flex items-center gap-2"
+              aria-label="Account Access"
             >
               <User size={20} />
               <span className="text-[10px] font-bold tracking-widest hidden lg:block uppercase">Account</span>
