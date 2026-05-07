@@ -48,6 +48,14 @@
   :focus-visible {
     @apply outline-none ring-2 ring-brand-red ring-offset-2 ring-offset-black transition-all;
   }
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-select: none;
+    pointer-events: none;
+  }
 }
 
 .text-display {

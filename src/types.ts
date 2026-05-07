@@ -21,6 +21,7 @@ export interface Product {
   is_upcoming?: boolean;
   release_date?: string;
   promo_label?: string;
+  stock?: number;
   created_at?: any;
 }
 
