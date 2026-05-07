@@ -89,6 +89,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
             onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
             className="w-10 h-10 bg-brand-red text-white flex items-center justify-center hover:bg-white hover:text-brand-red transition-all shadow-lg pointer-events-auto"
             title="Add to Bag"
+            aria-label={`Add ${product.name} to Bag`}
           >
             <Plus size={20} />
           </button>
@@ -96,6 +97,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
             onClick={(e) => { e.stopPropagation(); onViewDetails?.(product); }}
             className="w-10 h-10 bg-white text-black flex items-center justify-center hover:bg-brand-red hover:text-white transition-all shadow-lg pointer-events-auto"
             title="Quick View"
+            aria-label={`Quick view ${product.name} details`}
           >
             <Eye size={20} />
           </button>
@@ -106,6 +108,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
             onClick={(e) => e.stopPropagation()}
             className="w-10 h-10 bg-[#25D366] text-white flex items-center justify-center hover:bg-white hover:text-[#25D366] transition-all shadow-lg pointer-events-auto"
             title="Book via WhatsApp"
+            aria-label={`Inquire about ${product.name} on WhatsApp`}
           >
             <MessageCircle size={20} />
           </a>

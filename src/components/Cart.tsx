@@ -65,6 +65,7 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
                           <button 
                             onClick={() => onRemove(item.id, item.selectedSize || '')}
                             className="text-white/10 hover:text-brand-red transition-colors p-2"
+                            aria-label={`Remove ${item.name} from bag`}
                           >
                             <Trash2 size={14} />
                           </button>
@@ -77,11 +78,13 @@ export const Cart: React.FC<CartProps> = ({ isOpen, onClose, items, onUpdateQuan
                             <button 
                               onClick={() => onUpdateQuantity(item.id, item.selectedSize || '', Math.max(1, item.quantity - 1))}
                               className="px-2 py-1 text-white hover:bg-dark-border transition-colors"
+                              aria-label={`Decrease quantity of ${item.name}`}
                             >-</button>
                             <span className="px-3 py-1 text-xs font-mono">{item.quantity}</span>
                             <button 
                               onClick={() => onUpdateQuantity(item.id, item.selectedSize || '', item.quantity + 1)}
                               className="px-2 py-1 text-white hover:bg-dark-border transition-colors"
+                              aria-label={`Increase quantity of ${item.name}`}
                             >+</button>
                           </div>
                           <p className="text-sm font-bold">KES {(item.price * item.quantity).toLocaleString()}</p>

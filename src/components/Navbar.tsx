@@ -44,6 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
           <button 
             className="md:hidden text-white"
             onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Open navigation menu"
           >
             <Menu size={24} />
           </button>
@@ -75,6 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             className="text-white/60 hover:text-white transition-colors hidden sm:block"
             onClick={() => navigate('/products')}
             title="Search products"
+            aria-label="Search products"
           >
             <Search size={20} />
           </button>
@@ -92,6 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
               <button 
                 onClick={logout} 
                 title="Logout"
+                aria-label="Log out of your account"
                 className="text-white/40 hover:text-brand-red transition-all p-1"
               >
                 <LogOut size={18} />
@@ -109,6 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
           <button 
             className="relative text-white hover:text-brand-green transition-colors"
             onClick={onCartClick}
+            aria-label={`Open shopping bag, ${cartCount} items`}
           >
             <ShoppingBag size={20} />
             {cartCount > 0 && (
@@ -132,6 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             <button 
               className="self-end text-white/60 hover:text-white mb-12"
               onClick={() => setIsMobileMenuOpen(false)}
+              aria-label="Close navigation menu"
             >
               <X size={32} />
             </button>
