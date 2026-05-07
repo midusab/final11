@@ -18,13 +18,13 @@ export const Footer: React.FC = () => {
               Founded by <span className="text-brand-red">Wickliff Miles</span>.
             </p>
             <div className="flex items-center gap-6">
-              <a href="https://instagram.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors" aria-label="Follow FINALL 11 on Instagram">
+              <a href="https://instagram.com/finall11" target="_blank" rel="noreferrer" className="text-white/60 hover:text-brand-red transition-colors" aria-label="Follow FINALL 11 on Instagram">
                 <Instagram size={18} />
               </a>
-              <a href="https://twitter.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors" aria-label="Follow FINALL 11 on Twitter">
+              <a href="https://twitter.com/finall11" target="_blank" rel="noreferrer" className="text-white/60 hover:text-brand-red transition-colors" aria-label="Follow FINALL 11 on Twitter">
                 <Twitter size={18} />
               </a>
-              <a href="https://wa.me/254794900546" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors" aria-label="Contact FINALL 11 on WhatsApp">
+              <a href="https://wa.me/254794900546" target="_blank" rel="noreferrer" className="text-white/60 hover:text-brand-red transition-colors" aria-label="Contact FINALL 11 on WhatsApp">
                 <MessageSquare size={18} />
               </a>
             </div>
@@ -34,32 +34,32 @@ export const Footer: React.FC = () => {
             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red mb-6">Navigation</h4>
             <ul className="grid grid-cols-2 gap-4">
               <li>
-                <Link to="/" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                <Link to="/" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/products" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                <Link to="/products" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
                   Shop
                 </Link>
               </li>
               <li>
-                <Link to="/collections" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                <Link to="/collections" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
                   Archive
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                <Link to="/contact" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
                   Support
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                <Link to="/privacy" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
                   Privacy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                <Link to="/terms" className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">
                   Terms
                 </Link>
               </li>
@@ -105,7 +105,7 @@ export const Footer: React.FC = () => {
                   SUBSCRIBE
                 </button>
               </form>
-              <p className="mt-3 text-[8px] font-bold text-white/20 uppercase tracking-widest text-left lg:text-right">
+              <p className="mt-3 text-[8px] font-bold text-white/60 uppercase tracking-widest text-left lg:text-right">
                 BY JOINING, YOU AGREE TO OUR PRIVACY POLICY
               </p>
             </div>
@@ -113,12 +113,12 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-12 border-t border-dark-border flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/10">
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50">
             &copy; 2026 Finall 11 Studio © All Rights Reserved
           </p>
           <div className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">System Status: Optimal</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">System Status: Optimal</p>
           </div>
         </div>
       </div>

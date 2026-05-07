@@ -150,7 +150,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} size={8} className={i < Math.round(avg) ? "fill-brand-red text-brand-red" : "text-white/20"} />
                     ))}
-                    <span className="text-[8px] text-white/30 font-bold ml-1 uppercase tracking-widest">({avg.toFixed(1)})</span>
+                    <span className="text-[8px] text-white/50 font-bold ml-1 uppercase tracking-widest">({avg.toFixed(1)})</span>
                   </>
                 );
               })()}
@@ -173,7 +173,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
           <p className="text-sm font-display font-black text-brand-green">
             KES {product.price.toLocaleString()}
           </p>
-          <p className="text-[10px] text-white/20 line-through font-medium">
+          <p className="text-[10px] text-white/50 line-through font-medium">
             KES {(product.price * 1.25).toLocaleString()}
           </p>
         </div>

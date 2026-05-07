@@ -258,7 +258,7 @@ export default function App() {
           
           <h2 className="text-xl font-black uppercase tracking-widest mb-6 text-white/80">Calibration in Progress</h2>
           
-          <p className="text-white/30 uppercase text-[10px] tracking-[0.2em] leading-relaxed mb-16 max-w-sm mx-auto font-bold">
+          <p className="text-white/60 uppercase text-[10px] tracking-[0.2em] leading-relaxed mb-16 max-w-sm mx-auto font-bold">
             The archive is currently undergoing tactical reconfiguration. Normal operations will resume shortly.
           </p>
           
@@ -267,9 +267,9 @@ export default function App() {
             
             <Link 
               to="/admin" 
-              className="group flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-brand-red transition-all"
+              className="group flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-brand-red transition-all"
             >
-              <div className="w-2 h-2 rounded-full bg-white/10 group-hover:bg-brand-red animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-white/40 group-hover:bg-brand-red animate-pulse" />
               Staff Portal Access
             </Link>
           </div>
