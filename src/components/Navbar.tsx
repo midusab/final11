@@ -99,12 +99,12 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onSignIn
             </button>
           )}
           <button 
-            className="relative text-white hover:text-brand-red transition-colors"
+            className="relative text-white hover:text-brand-green transition-colors"
             onClick={onCartClick}
           >
             <ShoppingBag size={20} />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-brand-red text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-brand-green text-black text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
