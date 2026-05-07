@@ -1,23 +1,25 @@
 import React, { lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ProductCard } from './components/ProductCard';
-import { Cart } from './components/Cart';
-import { SignIn } from './components/SignIn';
-import { Footer } from './components/Footer';
-import { ProductDetailsModal } from './components/ProductDetailsModal';
-import { LandingOfferPopup } from './components/LandingOfferPopup';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { OfferBanner } from './components/OfferBanner';
-import { ContactWidgets } from './components/ContactWidgets';
-import { CookieConsent } from './components/CookieConsent';
 import { PRODUCTS, Product, CartItem, Review } from './types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabase';
 
+// High-Priority / Above-the-fold components are imported directly above.
+// Non-critical or below-the-fold components are lazy-loaded below.
+const Cart = lazy(() => import('./components/Cart').then(m => ({ default: m.Cart })));
+const SignIn = lazy(() => import('./components/SignIn').then(m => ({ default: m.SignIn })));
+const Footer = lazy(() => import('./components/Footer').then(m => ({ default: m.Footer })));
+const ProductDetailsModal = lazy(() => import('./components/ProductDetailsModal').then(m => ({ default: m.ProductDetailsModal })));
+const LandingOfferPopup = lazy(() => import('./components/LandingOfferPopup').then(m => ({ default: m.LandingOfferPopup })));
+const ContactWidgets = lazy(() => import('./components/ContactWidgets').then(m => ({ default: m.ContactWidgets })));
+const CookieConsent = lazy(() => import('./components/CookieConsent').then(m => ({ default: m.CookieConsent })));
 // Lazy Loaded Pages
 const ProductList = lazy(() => import('./pages/ProductsPage').then(m => ({ default: m.ProductsPage })));
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage').then(m => ({ default: m.CollectionsPage })));
@@ -96,6 +98,18 @@ export default function App() {
             expiry: configData.offer_expiry || '',
             product_id: configData.offer_product_id || ''
           });
+        } else if (isAdmin) {
+          // Initialize system config if missing
+          const defaultConfig = {
+            id: 'main',
+            maintenance_mode: false,
+            offer_active: false,
+            offer_text: 'WELCOME TO FINALL 11',
+            offer_expiry: '',
+            offer_product_id: null
+          };
+          await supabase.from('app_config').insert([defaultConfig]);
+          setMaintenanceMode(false);
         }
       } catch (e) {
         console.warn('System data fetch failed:', e);
@@ -106,14 +120,21 @@ export default function App() {
 
     loadData();
 
-    const channelName = `products-realtime-${Math.random().toString(36).substring(7)}`;
+    const channelName = `system-realtime-${Math.random().toString(36).substring(7)}`;
     const channel = supabase
       .channel(channelName)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'products' },
-        () => loadData()
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'app_config' }, (payload: any) => {
+        if (payload.new && payload.new.id === 'main') {
+          setMaintenanceMode(payload.new.maintenance_mode);
+          setOfferConfig({
+            active: payload.new.offer_active || false,
+            text: payload.new.offer_text || '',
+            expiry: payload.new.offer_expiry || '',
+            product_id: payload.new.offer_product_id || ''
+          });
+        }
+      })
       .subscribe();
 
     return () => {
@@ -189,14 +210,46 @@ export default function App() {
 
   if (maintenanceMode && !isAdmin && location.pathname !== '/admin') {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center p-12 text-center">
-        <div className="max-w-md">
-          <div className="text-6xl font-display font-black text-brand-red mb-8 animate-pulse">11_LOCKDOWN</div>
-          <h2 className="text-2xl font-black uppercase tracking-tight mb-4 text-white">System Calibration</h2>
-          <p className="text-white/40 uppercase text-[10px] tracking-widest leading-loose">
-            The node is currently undergoing updates. Access is restricted.
+      <div className="min-h-screen bg-black flex items-center justify-center p-6 text-center relative overflow-hidden">
+        {/* Background Noise/Grid */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-red/10 to-transparent pointer-events-none" />
+        
+        <div className="max-w-xl relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-block px-4 py-1 border border-brand-red/30 bg-brand-red/5 mb-12"
+          >
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-red animate-pulse">System Lockdown</p>
+          </motion.div>
+          
+          <h1 className="text-7xl md:text-9xl font-display font-black text-white mb-8 tracking-tighter uppercase leading-[0.8]">
+            11<span className="text-brand-red italic">_</span>OFFLINE
+          </h1>
+          
+          <h2 className="text-xl font-black uppercase tracking-widest mb-6 text-white/80">Calibration in Progress</h2>
+          
+          <p className="text-white/30 uppercase text-[10px] tracking-[0.2em] leading-relaxed mb-16 max-w-sm mx-auto font-bold">
+            The archive is currently undergoing tactical reconfiguration. Normal operations will resume shortly.
           </p>
+          
+          <div className="flex flex-col items-center gap-8">
+            <div className="w-48 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            
+            <Link 
+              to="/admin" 
+              className="group flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-brand-red transition-all"
+            >
+              <div className="w-2 h-2 rounded-full bg-white/10 group-hover:bg-brand-red animate-pulse" />
+              Staff Portal Access
+            </Link>
+          </div>
         </div>
+        
+        {/* Decorative corner elements */}
+        <div className="absolute top-12 left-12 w-24 h-24 border-t border-l border-white/5" />
+        <div className="absolute bottom-12 right-12 w-24 h-24 border-b border-r border-white/5" />
       </div>
     );
   }
@@ -316,58 +369,68 @@ export default function App() {
         </Suspense>
       </main>
 
-      <CookieConsent />
-      <ContactWidgets />
-      <Footer />
-
-      <Cart 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
-        items={cartItems}
-        onUpdateQuantity={(id, q) => setCartItems(prev => prev.map(i => i.id === id ? {...i, quantity: q} : i))}
-        onRemove={removeFromCart}
-        isAuthenticated={!!user}
-        onCheckout={async () => {
-          if (!user) {
-            setIsSignInOpen(true);
-            toast.error('SIGN IN REQUIRED', { description: 'Please sign in to complete your order.' });
-          } else {
-            try {
-              // Deduct stock
-              for (const item of cartItems) {
-                const currentStock = item.stock || 0;
-                const newStock = Math.max(0, currentStock - item.quantity);
-                await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
+      <Suspense fallback={null}>
+        <Footer />
+        <ContactWidgets />
+        <CookieConsent />
+        
+        <Cart 
+          isOpen={isCartOpen} 
+          onClose={() => setIsCartOpen(false)} 
+          items={cartItems}
+          onUpdateQuantity={(id, size, q) => {
+            const cartKey = `${id}-${size}`;
+            setCartItems(prev => prev.map(item => 
+              `${item.id}-${item.selectedSize}` === cartKey ? { ...item, quantity: q } : item
+            ));
+          }}
+          onRemove={(id, size) => {
+            const cartKey = `${id}-${size}`;
+            setCartItems(prev => prev.filter(item => `${item.id}-${item.selectedSize}` !== cartKey));
+          }}
+          isAuthenticated={!!user}
+          onCheckout={async () => {
+            if (!user) {
+              setIsSignInOpen(true);
+              toast.error('SIGN IN REQUIRED', { description: 'Please sign in to complete your order.' });
+            } else {
+              try {
+                // Deduct stock
+                for (const item of cartItems) {
+                  const currentStock = item.stock || 0;
+                  const newStock = Math.max(0, currentStock - item.quantity);
+                  await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
+                }
+                // Build WhatsApp order message
+                const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+                const lines = cartItems.map(i => `• ${i.name} (Size: ${i.selectedSize || 'N/A'}) x${i.quantity} — KES ${(i.price * i.quantity).toLocaleString()}`).join('%0A');
+                const msg = `Hello FINALL 11!%0A%0AI'd like to place an order:%0A%0A${lines}%0A%0A*TOTAL: KES ${total.toLocaleString()}*%0A%0AName: ${user.user_metadata?.full_name || ''}%0AEmail: ${user.email}`;
+                setCartItems([]);
+                setIsCartOpen(false);
+                window.open(`https://wa.me/254794900546?text=${msg}`, '_blank');
+                toast.success('ORDER SENT TO WHATSAPP', { description: 'Complete your order in the chat.' });
+              } catch (err: any) {
+                toast.error('CHECKOUT FAILED', { description: err.message });
               }
-              // Build WhatsApp order message
-              const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-              const lines = cartItems.map(i => `• ${i.name} (Size: ${i.selectedSize || 'N/A'}) x${i.quantity} — KES ${(i.price * i.quantity).toLocaleString()}`).join('%0A');
-              const msg = `Hello FINALL 11!%0A%0AI'd like to place an order:%0A%0A${lines}%0A%0A*TOTAL: KES ${total.toLocaleString()}*%0A%0AName: ${user.user_metadata?.full_name || ''}%0AEmail: ${user.email}`;
-              setCartItems([]);
-              setIsCartOpen(false);
-              window.open(`https://wa.me/254794900546?text=${msg}`, '_blank');
-              toast.success('ORDER SENT TO WHATSAPP', { description: 'Complete your order in the chat.' });
-            } catch (err: any) {
-              toast.error('CHECKOUT FAILED', { description: err.message });
             }
-          }
-        }}
-      />
+          }}
+        />
 
-      <SignIn 
-        isOpen={isSignInOpen} 
-        onClose={() => setIsSignInOpen(false)} 
-      />
+        <SignIn 
+          isOpen={isSignInOpen} 
+          onClose={() => setIsSignInOpen(false)} 
+        />
 
-      <ProductDetailsModal 
-        product={selectedProduct}
-        allProducts={products}
-        onClose={() => setSelectedProduct(null)}
-        onAddToCart={addToCart}
-        onAddReview={handleReviewSubmit}
-        isAuthenticated={!!user}
-        onViewDetails={setSelectedProduct}
-      />
+        <ProductDetailsModal 
+          product={selectedProduct}
+          allProducts={products}
+          onClose={() => setSelectedProduct(null)}
+          onAddToCart={addToCart}
+          onAddReview={handleReviewSubmit}
+          isAuthenticated={!!user}
+          onViewDetails={setSelectedProduct}
+        />
+      </Suspense>
     </div>
   );
 }
