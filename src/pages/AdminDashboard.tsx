@@ -27,7 +27,8 @@ export const AdminDashboard: React.FC = () => {
     details: [],
     material: '',
     sizes: [],
-    reviews: []
+    reviews: [],
+    stock: 0
   });
   const [detailInput, setDetailInput] = React.useState('');
 
