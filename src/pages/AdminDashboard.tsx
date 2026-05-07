@@ -62,14 +62,16 @@ export const AdminDashboard: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 1 * 1024 * 1024) {
-        toast.error('ASSET TOO HEAVY', { 
-          description: 'Max size is 1MB. High-res images break system calibration.' 
+        toast.error('Image Too Large', { 
+          description: 'Maximum image size is 1MB. Please compress your image before uploading.' 
         });
+        e.target.value = ''; // Reset input so they can try again
         return;
       }
       const reader = new FileReader();
       reader.onloadend = () => {
         setNewProduct({ ...newProduct, image: reader.result as string });
+        e.target.value = ''; // Reset input
       };
       reader.readAsDataURL(file);
     }
