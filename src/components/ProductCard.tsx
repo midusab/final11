@@ -160,7 +160,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
               {[...Array(5)].map((_, i) => (
                 <Star key={i} size={8} className="text-white/10" />
               ))}
-              <span className="text-[8px] text-white/20 font-bold ml-1 uppercase tracking-widest">NO_REVIEWS</span>
+              <span className="text-[8px] text-white/50 font-bold ml-1 uppercase tracking-widest">NO_REVIEWS</span>
             </>
           )}
         </div>
