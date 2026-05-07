@@ -110,6 +110,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
 
         {/* Jumia-style badges */}
         <div className="absolute top-0 left-0 flex flex-col gap-1 p-2">
+          {product.stock === 0 && (
+            <div className="bg-brand-red text-white text-[8px] font-black px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap z-20">
+              SOLD OUT
+            </div>
+          )}
           {product.is_upcoming && (
             <div className="bg-white text-black text-[8px] font-black px-2 py-0.5 tracking-tighter uppercase whitespace-nowrap animate-pulse">
               UPCOMING
@@ -169,9 +174,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
         
         <button 
           onClick={() => onAddToCart(product)}
-          className="mt-4 w-full border border-white/10 hover:border-brand-red hover:bg-brand-red text-white/60 hover:text-white py-2 text-[10px] font-black uppercase tracking-widest transition-all"
+          disabled={product.stock === 0}
+          className={`mt-4 w-full border py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+            product.stock === 0 
+            ? 'border-dark-border text-white/20 cursor-not-allowed bg-black' 
+            : 'border-white/10 hover:border-brand-red hover:bg-brand-red text-white/60 hover:text-white'
+          }`}
         >
-          Add to Bag
+          {product.stock === 0 ? 'Sold Out' : 'Add to Bag'}
         </button>
       </div>
     </motion.div>

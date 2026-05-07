@@ -491,7 +491,7 @@ export const AdminDashboard: React.FC = () => {
                       <img src={p.image} className="w-20 h-20 object-cover grayscale brightness-50 group-hover:grayscale-0 transition-all" />
                     ) : (
                       <div className="w-20 h-20 bg-black border border-dark-border flex items-center justify-center">
-                        <span className="text-[6px] font-black opacity-20 uppercase">NULL_11</span>
+                        <span className="text-[6px] font-black opacity-20 uppercase">No Image</span>
                       </div>
                     )}
                     <div className="flex-1">
@@ -499,7 +499,12 @@ export const AdminDashboard: React.FC = () => {
                         <h4 className="text-sm font-black uppercase tracking-widest">{p.name}</h4>
                         <button onClick={() => handleDeleteProduct(p.id)} className="text-white/10 hover:text-brand-red transition-colors"><Trash2 size={14}/></button>
                       </div>
-                      <p className="text-xs font-bold text-white/20 uppercase mb-4">KES {p.price.toLocaleString()}</p>
+                      <div className="flex items-center gap-4 mb-4">
+                        <p className="text-xs font-bold text-white/20 uppercase">KES {p.price.toLocaleString()}</p>
+                        <p className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border ${p.stock && p.stock > 0 ? 'text-brand-green border-brand-green/20 bg-brand-green/5' : 'text-brand-red border-brand-red/20 bg-brand-red/5'}`}>
+                          {p.stock && p.stock > 0 ? `${p.stock} IN STOCK` : 'SOLD OUT'}
+                        </p>
+                      </div>
                       
                       <div className="flex flex-wrap gap-2">
                         <button 
