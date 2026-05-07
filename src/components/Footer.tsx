@@ -18,13 +18,13 @@ export const Footer: React.FC = () => {
               Founded by <span className="text-brand-red">Wickliff Miles</span>.
             </p>
             <div className="flex items-center gap-6">
-              <a href="https://instagram.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors">
+              <a href="https://instagram.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors" aria-label="Follow FINALL 11 on Instagram">
                 <Instagram size={18} />
               </a>
-              <a href="https://twitter.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors">
+              <a href="https://twitter.com/finall11" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors" aria-label="Follow FINALL 11 on Twitter">
                 <Twitter size={18} />
               </a>
-              <a href="https://wa.me/254794900546" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors">
+              <a href="https://wa.me/254794900546" target="_blank" rel="noreferrer" className="text-white/20 hover:text-brand-red transition-colors" aria-label="Contact FINALL 11 on WhatsApp">
                 <MessageSquare size={18} />
               </a>
             </div>
