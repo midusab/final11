@@ -7,21 +7,19 @@ export const Hero: React.FC = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden bg-dark-bg">
       {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=2000"
-          srcSet="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=600 600w,
-                  https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=1200 1200w,
-                  https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=2000 2000w"
-          sizes="100vw"
-          alt="FINALL 11 Streetwear Culture"
-          fetchPriority="high"
-          loading="eager"
-          className="w-full h-full object-cover opacity-40 grayscale"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg via-transparent to-dark-bg opacity-90" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-brand-red/10 rounded-full blur-[120px]" />
-      </div>
+      <img 
+        src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=2000"
+        srcSet="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=600 600w,
+                https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=1200 1200w,
+                https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=2000 2000w"
+        sizes="100vw"
+        alt="FINALL 11 Streetwear Culture"
+        fetchPriority="high"
+        loading="eager"
+        className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale z-0"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-dark-bg via-transparent to-dark-bg opacity-90 z-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-brand-red/10 rounded-full blur-[120px] z-0" />
 
       <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
         <motion.div
