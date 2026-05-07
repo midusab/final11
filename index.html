@@ -30,7 +30,17 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- High-Performance LCP Placeholder: Renders before React hydrates -->
+      <div style="position:fixed;inset:0;background-color:#000;z-index:-1;display:flex;align-items:center;justify-content:center;">
+        <img 
+          src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=2000"
+          style="width:100%;height:100%;object-fit:cover;opacity:0.4;filter:grayscale(100%);"
+          alt=""
+        />
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom, #000, transparent, #000);opacity:0.9;"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
