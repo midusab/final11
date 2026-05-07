@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Star, ShoppingBag, Truck, RotateCcw, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Product } from '../types';
+import { getOptimizedImageUrl } from '../lib/imageOptimization';
 
 interface ProductDetailsModalProps {
   product: Product | null;
@@ -81,7 +82,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
             {/* Left side: Hero Image */}
             <div className="lg:w-1/2 h-[40vh] lg:h-full bg-dark-surface relative overflow-hidden group">
               <img 
-                src={product.image} 
+                src={getOptimizedImageUrl(product.image, 1200)} 
                 alt={product.name} 
                 className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000"
               />
